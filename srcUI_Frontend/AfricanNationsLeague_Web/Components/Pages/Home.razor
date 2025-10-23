@@ -1,0 +1,197 @@
+﻿@page "/"
+
+<section class="hero">
+    <div class="hero-content">
+        <div class="tournament-badge">
+            <span class="live-dot"></span>
+            TOURNAMENT LIVE
+        </div>
+        <h1>AFRICAN NATIONS LEAGUE 2026</h1>
+        <p>
+            Experience the future of African football. Watch nations compete in the inaugural tournament that will reshape continental competition.
+        </p>
+        <div class="hero-buttons">
+            <button class="btn btn-primary btn-large">Register Your Team</button>
+            <button class="btn btn-secondary btn-large">View Bracket</button>
+        </div>
+    </div>
+</section>
+
+<style>
+    :root {
+        --primary: #10b981;
+        --primary-dark: #047857;
+        --primary-light: #34d399;
+        --success: #10b981;
+        --bg-dark: #0f172a;
+        --text-primary: #e2e8f0;
+        --text-secondary: #94a3b8;
+        --border: #23304a;
+    }
+
+    .hero {
+        min-height: 100vh;
+        padding: 6rem 2rem 4rem;
+        text-align: center;
+        font-family: 'Inter', sans-serif;
+        background: var(--bg-dark);
+        color: var(--text-primary);
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, rgba(16,185,129,0.18) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+    .hero-content {
+        max-width: 900px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tournament-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1.25rem;
+        background: rgba(16,185,129,0.08);
+        border: 1px solid rgba(16,185,129,0.3);
+        border-radius: 50px;
+        color: var(--primary);
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        animation: pulse 2s ease-in-out infinite;
+        box-shadow: 0 0 0 1px rgba(16,185,129,0.08);
+    }
+
+    @@keyframes pulse {
+        0%, 100%
+
+    {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+
+    }
+
+    .live-dot {
+        width: 10px;
+        height: 10px;
+        background: var(--success);
+        border-radius: 50%;
+        animation: blink 1.5s ease-in-out infinite;
+        display: inline-block;
+    }
+
+    @@keyframes blink {
+        0%, 100%
+
+    {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    }
+
+    h1 {
+        font-family: 'Bebas Neue', 'Inter', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 2rem;
+        letter-spacing: 3px;
+        background: linear-gradient(135deg, #bfffe0 0%, var(--primary-light) 100%);
+        webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero p {
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+        margin-bottom: 3rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2.5rem;
+    }
+
+    .btn-large {
+        padding: 1.2rem 2.8rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+        border-radius: 12px;
+        transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(16,185,129,0.18);
+        border: none;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(16,185,129,0.28);
+        }
+
+    .btn-secondary {
+        background: transparent;
+        color: #fff;
+        border: 2px solid var(--border);
+        box-shadow: 0 2px 12px rgba(16,185,129,0.08);
+    }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: rgba(16,185,129,0.08);
+            color: var(--primary-light);
+        }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: #0f172a; /* match your hero background */
+    }
+
+    main, .mud-main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #0f172a !important;
+    }
+
+</style>

@@ -1,0 +1,173 @@
+﻿@page "/login"
+
+<style>
+    .modal {
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .modal-content {
+        background: #11172a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 3rem;
+        max-width: 450px;
+        width: 100%;
+        position: relative;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        animation: modalSlideIn 0.3s ease;
+        color: #ffffff;
+    }
+
+    @@keyframes modalSlideIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 1.2rem;
+        right: 1.2rem;
+        color: #9aa2b1 !important;
+    }
+
+    .modal-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2rem;
+        letter-spacing: 1px;
+        margin-bottom: 0.3rem;
+    }
+
+    .modal-subtitle {
+        color: #9aa2b1;
+        margin-bottom: 2rem;
+        font-size: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-input {
+        width: 100%;
+        background-color: #181f34 !important;
+        border-radius: 10px !important;
+        color: #ffffff;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .login-btn {
+        background: linear-gradient(90deg, #00a86b, #007f57) !important;
+        border-radius: 10px;
+        color: white !important;
+        font-weight: 600;
+        width: 100%;
+        padding: 1rem;
+        margin-top: 1rem;
+        box-shadow: 0 0 14px rgba(0, 255, 140, 0.3);
+        transition: all 0.3s ease;
+    }
+
+        .login-btn:hover {
+            box-shadow: 0 0 18px rgba(0, 255, 140, 0.5);
+            transform: translateY(-2px);
+        }
+
+    .form-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: #9aa2b1;
+        font-size: 0.95rem;
+    }
+
+        .form-footer a {
+            color: #00b86b;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+            .form-footer a:hover {
+                color: #00ff99;
+            }
+
+</style>
+<div class="modal active">
+    <div class="modal-content">
+        <MudIconButton Icon="@Icons.Material.Filled.Close"
+                       Class="modal-close" />
+
+        <h3 class="modal-title">WELCOME BACK</h3>
+        <p class="modal-subtitle">Login to manage your team</p>
+
+        <EditForm Model="@_loginModel">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <MudTextField @bind-Value="_loginModel.Email"
+                              Placeholder="your@email.com"
+                              Class="form-input"
+                              Required="true"
+                              Variant="Variant.Outlined" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <MudTextField @bind-Value="_loginModel.Password"
+                              InputType="InputType.Password"
+                              Placeholder="••••••••"
+                              Class="form-input"
+                              Required="true"
+                              Variant="Variant.Outlined" />
+            </div>
+
+            <MudButton Type="Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Class="btn btn-primary btn-full login-btn">
+                Login
+            </MudButton>
+
+            <div class="form-footer">
+                Don’t have an account?
+                <a href="#">Register here</a>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private LoginModel _loginModel = new();
+
+    public class LoginModel
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+}

@@ -1,0 +1,95 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0" Class="app-bar px-4"
+               Style="background: #0f172a !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;">
+
+        <MudContainer MaxWidth="MaxWidth.False" Class="d-flex align-center justify-between w-100">
+
+            
+              
+
+
+            
+
+            <!-- Logo -->
+            <MudText Typo="Typo.h6" Class="logo-text">
+                <span class="gradient-text">AFRICAN NATIONS LEAGUE</span>
+            </MudText>
+
+            <!-- Centered Navigation -->
+            <div class="menulink d-flex align-center justify-center flex-grow-1 nav-center">
+                <ul class="nav-links">
+                    <li>
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/bracket">Bracket</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/scorers">Top Scorers</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/teams">Teams</a>
+                    </li>
+                </ul>
+
+                
+
+              @*   <MudButton Href="/" Variant="Variant.Text" Color="Color.Inherit" Class="nav-link">Home</MudButton>
+                <MudButton Href="/bracket" Variant="Variant.Text" Color="Color.Inherit" Class="nav-link">Bracket</MudButton>
+                <MudButton Href="/scorers" Variant="Variant.Text" Color="Color.Inherit" Class="nav-link">Top Scorers</MudButton>
+                <MudButton Href="/teams" Variant="Variant.Text" Color="Color.Inherit" Class="nav-link">Teams</Mud  *@
+            </div>
+
+            <!-- Right-aligned Buttons -->
+            <div class="navbutton d-flex align-center justify-end">
+                <MudButton Variant="Variant.Outlined" Color="Color.Inherit" Class="ml-4 login-btn">
+                    Login
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Success" Class="ml-2 register-btn">
+                    Register Team
+                </MudButton>
+            </div>
+          
+
+            <div class="DrawerToggleButton">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" style="color:white" Edge="Edge.Start" />
+
+            </div>
+        </MudContainer>
+    </MudAppBar>
+
+
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+
+@* <div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div> *@

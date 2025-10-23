@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.36105.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{5FD004D0-809B-4AE1-8BEB-84692230F515}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AfricanNationsLeague.Application", "src_Backend\AfricanNationsLeague.Application\AfricanNationsLeague.Application.csproj", "{17AB6246-E98E-4FE0-9345-785295767F38}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AfricanNationsLeague.Api", "src_Backend\AfricanNationsLeague.Api\AfricanNationsLeague.Api.csproj", "{8897B0E3-0C8D-4C3C-AC43-B45F7EAABA33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AfricanNationsLeague.Infrastructure", "src_Backend\AfricanNationsLeague.Infrastructure\AfricanNationsLeague.Infrastructure.csproj", "{D03BE94A-131A-4D92-BEB5-E992F9C31C52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AfricanNationsLeague.Domain", "src_Backend\AfricanNationsLeague.Domain\AfricanNationsLeague.Domain.csproj", "{D88C613C-5105-4557-AA6B-B312C636DBCA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AfricanNationsLeague_Web", "srcUI_Frontend\AfricanNationsLeague_Web\AfricanNationsLeague_Web.csproj", "{CABD125D-9CB1-4B57-A67D-F775CB0DAFB9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{17AB6246-E98E-4FE0-9345-785295767F38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17AB6246-E98E-4FE0-9345-785295767F38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17AB6246-E98E-4FE0-9345-785295767F38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17AB6246-E98E-4FE0-9345-785295767F38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8897B0E3-0C8D-4C3C-AC43-B45F7EAABA33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8897B0E3-0C8D-4C3C-AC43-B45F7EAABA33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8897B0E3-0C8D-4C3C-AC43-B45F7EAABA33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8897B0E3-0C8D-4C3C-AC43-B45F7EAABA33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D03BE94A-131A-4D92-BEB5-E992F9C31C52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D03BE94A-131A-4D92-BEB5-E992F9C31C52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D03BE94A-131A-4D92-BEB5-E992F9C31C52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D03BE94A-131A-4D92-BEB5-E992F9C31C52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D88C613C-5105-4557-AA6B-B312C636DBCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D88C613C-5105-4557-AA6B-B312C636DBCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D88C613C-5105-4557-AA6B-B312C636DBCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D88C613C-5105-4557-AA6B-B312C636DBCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CABD125D-9CB1-4B57-A67D-F775CB0DAFB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CABD125D-9CB1-4B57-A67D-F775CB0DAFB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CABD125D-9CB1-4B57-A67D-F775CB0DAFB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CABD125D-9CB1-4B57-A67D-F775CB0DAFB9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{17AB6246-E98E-4FE0-9345-785295767F38} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{8897B0E3-0C8D-4C3C-AC43-B45F7EAABA33} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{D03BE94A-131A-4D92-BEB5-E992F9C31C52} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{D88C613C-5105-4557-AA6B-B312C636DBCA} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{CABD125D-9CB1-4B57-A67D-F775CB0DAFB9} = {5FD004D0-809B-4AE1-8BEB-84692230F515}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {93DF79F5-1485-4576-ABD3-91697C4FA7AB}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,102 @@
+﻿@page "/reg"
+@using MudBlazor
+
+<style>
+    .register-container {
+        background-color: #1E1E2F;
+        padding: 2rem;
+        max-width: 450px;
+        margin: 50px auto;
+        color: #fff;
+        border-radius: 16px;
+    }
+
+    .mud-input-root {
+        background-color: #181f34 !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+    }
+
+    .mud-select-root {
+        background-color: #181f34 !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+    }
+
+        .mud-input-root input,
+        .mud-select-root input {
+            color: #ffffff !important;
+        }
+
+    .register-btn {
+        background: linear-gradient(90deg, #00a86b, #007f57) !important;
+        border-radius: 10px;
+        font-weight: 600;
+        box-shadow: 0 0 14px rgba(0, 255, 140, 0.3);
+        transition: all 0.3s ease;
+    }
+
+        .register-btn:hover {
+            box-shadow: 0 0 18px rgba(0, 255, 140, 0.5);
+            transform: translateY(-2px);
+        }
+
+    .form-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: #9aa2b1;
+        font-size: 0.95rem;
+    }
+
+        .form-footer a {
+            color: #00b86b;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+            .form-footer a:hover {
+                color: #00ff99;
+            }
+</style>
+
+<MudPaper Class="register-container" Elevation="4">
+    <MudText Typo="Typo.h5" Class="mb-2" Bold="true">REGISTER YOUR TEAM</MudText>
+    <MudText Typo="Typo.subtitle2" Class="mb-4">Join the African Nations League</MudText>
+
+    <EditForm Model="@_registerModel" OnValidSubmit="RegisterTeam">
+        <MudTextField @bind-Value="_registerModel.FederationRep" Label="Federation Representative" Variant="Variant.Filled" FullWidth="true" Class="mb-3" />
+        <MudTextField @bind-Value="_registerModel.Email" Label="Email" Variant="Variant.Filled" FullWidth="true" Class="mb-3" />
+
+        <MudSelect @bind-Value="_registerModel.Country" Label="Country" Variant="Variant.Filled" FullWidth="true" Class="mb-3" Placeholder="Select a country">
+        
+        </MudSelect>
+
+        <MudTextField @bind-Value="_registerModel.ManagerName" Label="Manager Name" Variant="Variant.Filled" FullWidth="true" Class="mb-3" />
+        <MudTextField @bind-Value="_registerModel.Password" Label="Password" Variant="Variant.Filled" InputType="InputType.Password" FullWidth="true" Class="mb-4" />
+
+        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Submit" Class="register-btn">Register Team</MudButton>
+    </EditForm>
+
+    <MudText Typo="Typo.body2" Align="Align.Center" Class="form-footer mt-2">
+        Already have an account? <MudLink Href="/login">Login here</MudLink>
+    </MudText>
+</MudPaper>
+
+@code {
+    private RegisterModel _registerModel = new RegisterModel();
+
+    private void RegisterTeam()
+    {
+        Console.WriteLine($"Registering {_registerModel.FederationRep}'s team from {_registerModel.Country}");
+    }
+
+    public class RegisterModel
+    {
+        public string FederationRep { get; set; }
+        public string Email { get; set; }
+        public string Country { get; set; }
+        public string ManagerName { get; set; }
+        public string Password { get; set; }
+    }
+}
