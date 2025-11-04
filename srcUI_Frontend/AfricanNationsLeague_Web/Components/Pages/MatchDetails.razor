@@ -1,0 +1,617 @@
+﻿
+
+                        @page "/match/{MatchId}"
+
+
+
+<PageTitle>Match Details - African Nations League</PageTitle>
+
+<div class="match-detail-page">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="py-8">
+
+        @if (isLoading)
+        {
+            <div class="text-center my-8">
+                <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+                <MudText Typo="Typo.subtitle1" Class="mt-4">Loading match details...</MudText>
+            </div>
+        }
+        else if (notFound)
+        {
+            <MudAlert Severity="Severity.Error" Class="my-4">
+                Match not found or unavailable.
+            </MudAlert>
+        }
+        else if (match != null)
+        {
+            <!-- Match Header -->
+            <MudCard Class="match-header-card mb-6">
+                <MudCardContent>
+                    <div class="match-header">
+                        <div class="match-stage mb-4">
+                            <MudChip T="string" Color="Color.Info" Size="Size.Large">@match.Stage</MudChip>
+                        </div>
+
+                        <div class="match-teams-display d-flex justify-center align-center mb-4">
+                            <div class="team-section text-center">
+                               
+                                <img src="@match.HomeCountry?.FlagUrl"
+                                     alt="@match.HomeCountry?.Name"
+                                     style="width: 24px; height: 16px; border-radius: 2px;" />
+                                <MudText Typo="Typo.h4" Class="team-name-large">@match.HomeCountry?.Name</MudText>
+                            </div>
+
+                            <div class="score-section mx-8 text-center">
+                                <MudText Typo="Typo.h2" Class="score-large">@match.HomeScore</MudText>
+                                <MudText Typo="Typo.h5" Class="score-separator">-</MudText>
+                                <MudText Typo="Typo.h2" Class="score-large">@match.AwayScore</MudText>
+                            </div>
+
+                            <div class="team-section text-center">
+                                
+                                <img src="@match.AwayCountry?.FlagUrl"
+                                     alt="@match.AwayCountry?.Name"
+                                     style="width: 24px; height: 16px; border-radius: 2px;" />
+                                <MudText Typo="Typo.h4" Class="team-name-large">@match.AwayCountry?.Name</MudText>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <MudChip T="string" Color="Color.Primary" Icon="@Icons.Material.Filled.FastForward">
+                                Simulated Match
+                            </MudChip>
+                        </div>
+                    </div>
+                </MudCardContent>
+            </MudCard>
+
+            @if (match.IsPlayed)
+            {
+                <!-- Play-by-Play Commentary -->
+                <MudCard Class="commentary-card">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h5">
+                                <MudIcon Icon="@Icons.Material.Filled.Article" Class="mr-2" Style="color:white" />
+                                Match Commentary
+                            </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        @if (match.Commentary != null && match.Commentary.Any())
+                        {
+                            <MudTimeline TimelineOrientation="TimelineOrientation.Vertical" TimelinePosition="TimelinePosition.Start">
+                                @foreach (var comment in match.Commentary)
+                                {
+                                    <MudTimelineItem Color="Color.Primary" Size="Size.Small">
+                                        <ItemOpposite>
+                                            <MudText Typo="Typo.body2" Class="commentary-time" Style="color:white">@comment.Minute'</MudText>
+                                        </ItemOpposite>
+                                        <ItemContent>
+                                            <MudCard Class="commentary-item">
+                                                <MudCardContent>
+                                                    @if (comment.Text == "Goal")
+                                                    {
+                                                        <div class="goal-commentary">
+                                                            <MudIcon Icon="@Icons.Material.Filled.SportsSoccer" Color="Color.Success" Class="mr-2" />
+                                                            <strong>GOAL!</strong>
+                                                        </div>
+                                                    }
+                                                    <MudText Typo="Typo.body1" Style="color:white">@comment.Text</MudText>
+                                                    @if (!string.IsNullOrEmpty(comment.Text))
+                                                    {
+                                                        <MudText Typo="Typo.body2" Class="text-slate-400 mt-1" Style="color:white">
+                                                            Scorer: <strong>@comment.Minute</strong>
+                                                        </MudText>
+                                                    }
+                                                </MudCardContent>
+                                            </MudCard>
+                                        </ItemContent>
+                                    </MudTimelineItem>
+                                }
+                            </MudTimeline>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Style="color:white">No commentary available for this match.</MudText>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            }
+            else
+            {
+                <!-- Simulated Match Summary -->
+                <MudCard Class="simulated-summary-card">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h5">
+                                <MudIcon Icon="@Icons.Material.Filled.Summarize" Class="mr-2" />
+                                Match Summary
+                            </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudAlert Severity="Severity.Info" Class="mb-4">
+                            This match was simulated. Only final results are available.
+                        </MudAlert>
+
+                        <MudGrid>
+                            <MudItem xs="12" md="6">
+                                <MudCard Class="goal-scorers-card">
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudText Typo="Typo.h6">Goal Scorers</MudText>
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
+                                    <MudCardContent>
+                                        @if (match.HomeGoals != null && match.HomeGoals.Any())
+                                        {
+                                            <MudList T="string">
+                                                @foreach (var goal in match.HomeGoals)
+                                                {
+                                                    <MudListItem>
+                                                        <div class="scorer-item">
+                                                            <MudIcon Icon="@Icons.Material.Filled.SportsSoccer" Color="Color.Success" Size="Size.Small" />
+                                                            <span class="scorer-name">@goal.PlayerName</span>
+                                                            <span class="scorer-minute">@goal.Minute'</span>
+                                                        </div>
+                                                    </MudListItem>
+                                                }
+                                            </MudList>
+                                        }
+                                        else
+                                        {
+                                            <MudText Typo="Typo.body2" Color="Color.Secondary">No goals recorded.</MudText>
+                                        }
+                                    </MudCardContent>
+                                </MudCard>
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudCard Class="match-stats-card">
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudText Typo="Typo.h6">Match Statistics</MudText>
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
+                                    <MudCardContent>
+                                        <div class="stat-row">
+                                            <span>Final Score</span>
+                                            <strong>@match.HomeScore - @match.AwayScore</strong>
+                                        </div>
+                                        <MudDivider Class="my-2" />
+                                        <div class="stat-row">
+                                            <span>Match Duration</span>
+                                            <strong>90 minutes</strong>
+                                        </div>
+                                        <MudDivider Class="my-2" />
+                                        <div class="stat-row">
+                                            <span>Total Goals</span>
+                                            <strong>@(match.HomeScore + match.AwayScore)</strong>
+                                        </div>
+                                    </MudCardContent>
+                                </MudCard>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardContent>
+                </MudCard>
+            }
+
+            <!-- Back Button -->
+            <div class="mt-6 text-center">
+                <MudButton
+                    Variant="Variant.Outlined"
+                    Color="Color.Primary"
+                    StartIcon="@Icons.Material.Filled.ArrowBack"
+                    Href="/">
+                    Back to Tournament
+                </MudButton>
+            </div>
+        }
+    </MudContainer>
+</div>
+
+<style>
+    /* Match Details Page Styles */
+
+    .match-detail-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+        background: #f8fafc;
+    }
+
+    .match-header-card {
+        margin-bottom: 24px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .match-header {
+        padding: 40px 32px;
+        /* Changed from purple gradient to professional navy blue gradient */
+        background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .match-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.4;
+        }
+
+    .match-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        text-align: center;
+        position: relative;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .match-subtitle {
+        font-size: 1.125rem;
+        opacity: 0.95;
+        text-align: center;
+        font-weight: 400;
+        position: relative;
+    }
+
+    .match-teams-display {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+        margin-top: 40px;
+        position: relative;
+    }
+
+    .team-section {
+        flex: 1;
+        text-align: center;
+    }
+
+    .team-flag {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 20px;
+        display: block;
+        border: 5px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        transition: transform 0.3s ease;
+    }
+
+        .team-flag:hover {
+            transform: scale(1.05);
+        }
+
+    .team-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .score-section {
+        text-align: center;
+        padding: 0 32px;
+    }
+
+    .score-large {
+        font-size: 4.5rem;
+        font-weight: 800;
+        line-height: 1;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        letter-spacing: 8px;
+    }
+
+    .match-status {
+        font-size: 1rem;
+        margin-top: 12px;
+        opacity: 0.95;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 6px 16px;
+        border-radius: 20px;
+        display: inline-block;
+    }
+
+    .commentary-card {
+        margin-bottom: 24px;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .commentary-section {
+        padding: 32px;
+        background: white;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        color: #1e293b;
+        /* Changed border color to professional navy blue */
+        border-bottom: 3px solid #1e40af;
+        padding-bottom: 12px;
+        display: inline-block;
+    }
+
+    .commentary-item {
+        padding: 20px;
+        margin-bottom: 16px;
+        border-left: 5px solid #cbd5e1;
+        /* Changed from purple gradient to professional slate gray */
+        background: linear-gradient(135deg, #475569 0%, #334155 100%);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+        .commentary-item:hover {
+            /* Updated hover shadow to match new color scheme */
+            box-shadow: 0 6px 20px rgba(71, 85, 105, 0.3);
+            transform: translateX(8px);
+        }
+
+    .goal-commentary {
+        border-left-color: #22c55e;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+    }
+
+        .goal-commentary:hover {
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4);
+        }
+
+    .commentary-time {
+        font-weight: 700;
+        color: white;
+        margin-right: 16px;
+        font-size: 1rem;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 4px 12px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    .commentary-text {
+        color: white;
+        line-height: 1.7;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .scorers-section {
+        padding: 32px;
+        background: white;
+    }
+
+    .scorers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 32px;
+    }
+
+    .team-scorers {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 24px;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+        .team-scorers h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1e293b;
+            /* Changed border color to professional navy blue */
+            border-bottom: 2px solid #1e40af;
+            padding-bottom: 8px;
+        }
+
+    .scorer-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px;
+        background: white;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+
+        .scorer-item:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+            /* Changed hover border color to navy blue */
+            border-color: #1e40af;
+        }
+
+        .scorer-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .scorer-minute {
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        color: white;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+        min-width: 50px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+    }
+
+    .scorer-name {
+        flex: 1;
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 1.05rem;
+    }
+
+    .stats-section {
+        padding: 32px;
+        background: white;
+    }
+
+    .stats-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+    }
+
+    .stat-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 20px;
+        padding: 16px;
+        background: #f8fafc;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+    }
+
+        .stat-row:hover {
+            background: #f1f5f9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+    .stat-label {
+        text-align: center;
+        font-weight: 700;
+        color: #475569;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+        .stat-value:first-child {
+            text-align: right;
+            /* Changed home team stat color to professional navy blue */
+            color: #1e40af;
+        }
+
+        .stat-value:last-child {
+            text-align: left;
+            /* Changed away team stat color to professional dark red */
+            color: #dc2626;
+        }
+
+    .stat-bar-container {
+        grid-column: 1 / -1;
+        height: 10px;
+        background: #e2e8f0;
+        border-radius: 6px;
+        overflow: hidden;
+        margin-top: -8px;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-bar {
+        display: flex;
+        height: 100%;
+    }
+
+    .stat-bar-home {
+        /* Changed home team bar color to professional navy blue gradient */
+        background: linear-gradient(90deg, #1e40af 0%, #1e3a8a 100%);
+        transition: width 0.5s ease;
+    }
+
+    .stat-bar-away {
+        /* Changed away team bar color to professional red gradient */
+        background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+        transition: width 0.5s ease;
+    }
+
+    .no-data-message {
+        text-align: center;
+        padding: 48px;
+        color: #64748b;
+        font-style: italic;
+        font-size: 1.125rem;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .match-detail-page
+
+    {
+        padding: 16px;
+    }
+
+    .match-header {
+        padding: 32px 20px;
+    }
+
+    .match-teams-display {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .score-section {
+        order: -1;
+        padding: 20px 0;
+    }
+
+    .score-large {
+        font-size: 3rem;
+        letter-spacing: 4px;
+    }
+
+    .team-flag {
+        width: 80px;
+        height: 80px;
+    }
+
+    .team-name {
+        font-size: 1.25rem;
+    }
+
+    .commentary-section,
+    .scorers-section,
+    .stats-section {
+        padding: 24px;
+    }
+
+    .scorers-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-row {
+        gap: 16px;
+        padding: 12px;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+    }
+
+    }
+</style>

@@ -1,6 +1,42 @@
 ﻿@page "/login"
+@using System.ComponentModel.DataAnnotations;
+@inject ISnackbar Snackbar
 
 <style>
+    /* Premium Login Page - Enterprise Grade Styling */
+
+    :root {
+        --bg-primary: #050810;
+        --bg-secondary: #0f1419;
+        --bg-tertiary: #1a2332;
+        --bg-hover: #242f3f;
+        --border-primary: #2d3b52;
+        --border-subtle: #1a2332;
+        --text-primary: #ffffff;
+        --text-secondary: #a0aac0;
+        --text-tertiary: #64748b;
+        --accent-cyan: #00d9ff;
+        --accent-blue: #3b82f6;
+        --accent-gold: #fbbf24;
+        --accent-success: #10b981;
+        --accent-error: #ef4444;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Modal Background */
     .modal {
         display: flex;
         position: fixed;
@@ -8,25 +44,43 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(10px);
+        background: linear-gradient(135deg, rgba(5, 8, 16, 0.95) 0%, rgba(15, 20, 25, 0.95) 100%);
+        backdrop-filter: blur(12px);
         z-index: 2000;
         align-items: center;
         justify-content: center;
         padding: 2rem;
     }
 
+        .modal.active {
+            animation: fadeIn 0.3s ease;
+        }
+
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+    }
+
+    /* Modal Content Container */
     .modal-content {
-        background: #11172a;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+        border: 1.5px solid var(--border-primary);
         border-radius: 16px;
-        padding: 3rem;
+        padding: 3.5rem;
         max-width: 450px;
         width: 100%;
         position: relative;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-        animation: modalSlideIn 0.3s ease;
-        color: #ffffff;
+        box-shadow: 0 20px 60px rgba(0, 217, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        color: var(--text-primary);
     }
 
     @@keyframes modalSlideIn {
@@ -34,140 +88,387 @@
 
     {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateY(-30px) scale(0.95);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 
     }
 
+    /* Modal Close Button */
     .modal-close {
         position: absolute;
-        top: 1.2rem;
-        right: 1.2rem;
-        color: #9aa2b1 !important;
+        top: 1.5rem;
+        right: 1.5rem;
+        color: var(--text-secondary) !important;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: rgba(0, 217, 255, 0.05);
     }
 
+        .modal-close:hover {
+            background: rgba(0, 217, 255, 0.15);
+            color: var(--accent-cyan) !important;
+            transform: scale(1.1);
+        }
+
+    /* Modal Title */
     .modal-title {
-        font-family: 'Bebas Neue', sans-serif;
         font-size: 2rem;
-        letter-spacing: 1px;
-        margin-bottom: 0.3rem;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+        color: var(--accent-cyan);
+        line-height: 1.2;
     }
 
+    /* Modal Subtitle */
     .modal-subtitle {
-        color: #9aa2b1;
+        color: var(--text-secondary);
+        margin-bottom: 2.5rem;
+        font-size: 1rem;
+        font-weight: 400;
+        letter-spacing: 0.3px;
+    }
+
+    /* Form Group */
+    .form-group {
         margin-bottom: 2rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Form Label */
+    .form-label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    /* Form Input - MudTextField Override */
+    .form-input {
+        width: 100% !important;
+        background-color: rgba(15, 20, 25, 0.8) !important;
+        border-radius: 10px !important;
+        color: var(--text-primary) !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
+        transition: all 0.3s ease !important;
+        border: 1.5px solid var(--border-primary) !important;
+    }
+
+    :deep(.form-input .mud-input-underline) {
+        display: none !important;
+    }
+
+    :deep(.form-input .mud-input) {
+        color: var(--text-primary) !important;
         font-size: 1rem;
     }
 
-    .form-group {
-        margin-bottom: 1.5rem;
+    :deep(.form-input .mud-input::placeholder) {
+        color: var(--text-tertiary) !important;
     }
 
-    .form-label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        font-size: 0.95rem;
+    :deep(.form-input:hover) {
+        background-color: rgba(26, 35, 50, 0.9) !important;
+        border-color: rgba(0, 217, 255, 0.3) !important;
     }
 
-    .form-input {
-        width: 100%;
-        background-color: #181f34 !important;
-        border-radius: 10px !important;
-        color: #ffffff;
-        font-family: 'Inter', sans-serif;
+    :deep(.form-input:focus-within) {
+        background-color: rgba(26, 35, 50, 0.95) !important;
+        border-color: var(--accent-cyan) !important;
+        box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.15) !important;
     }
 
+    :deep(.form-input .mud-input-slot) {
+        color: var(--text-secondary) !important;
+    }
+
+    /* Login Button */
     .login-btn {
-        background: linear-gradient(90deg, #00a86b, #007f57) !important;
-        border-radius: 10px;
-        color: white !important;
-        font-weight: 600;
+        background: linear-gradient(135deg, var(--accent-cyan) 0%, #00b8d4 100%) !important;
+        border-radius: 10px !important;
+        color: var(--bg-primary) !important;
+        font-weight: 800 !important;
         width: 100%;
-        padding: 1rem;
-        margin-top: 1rem;
-        box-shadow: 0 0 14px rgba(0, 255, 140, 0.3);
-        transition: all 0.3s ease;
+        padding: 1.125rem !important;
+        margin-top: 1.5rem;
+        border: none !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.06em !important;
+        font-size: 0.95rem !important;
+        box-shadow: 0 12px 32px rgba(0, 217, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
     }
 
-        .login-btn:hover {
-            box-shadow: 0 0 18px rgba(0, 255, 140, 0.5);
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .login-btn:hover:not(:disabled) {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+
+            .login-btn:hover:not(:disabled)::before {
+                left: 100%;
+            }
+
+        .login-btn:active:not(:disabled) {
             transform: translateY(-2px);
         }
 
+        .login-btn:disabled {
+            background: linear-gradient(135deg, var(--bg-hover) 0%, var(--bg-tertiary) 100%) !important;
+            color: var(--text-tertiary) !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+        }
+
+    /* Loading State */
+    :deep(.mud-progress-circular) {
+        color: var(--bg-primary) !important;
+    }
+
+    /* Form Footer */
     .form-footer {
         text-align: center;
-        margin-top: 1.5rem;
-        color: #9aa2b1;
+        margin-top: 2.5rem;
+        color: var(--text-secondary);
         font-size: 0.95rem;
+        font-weight: 500;
     }
 
         .form-footer a {
-            color: #00b86b;
+            color: var(--accent-cyan);
             text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            margin-left: 0.5rem;
+            border-bottom: 2px solid transparent;
         }
 
             .form-footer a:hover {
-                color: #00ff99;
+                color: #00ffff;
+                border-bottom-color: var(--accent-cyan);
             }
 
+    /* Snackbar */
+    .mud-snackbar {
+        z-index: 3000 !important;
+    }
+
+    :deep(.mud-alert-snackbar) {
+        background: linear-gradient(135deg, rgba(15, 20, 25, 0.95) 0%, rgba(26, 35, 50, 0.95) 100%) !important;
+        border: 1px solid var(--border-primary) !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    /* MudButton Overrides */
+    :deep(.mud-button) {
+        font-weight: 800 !important;
+        letter-spacing: 0.05em !important;
+        text-transform: uppercase !important;
+    }
+
+    /* MudTextField Overrides */
+    :deep(.mud-text-field) {
+        color: var(--text-primary) !important;
+    }
+
+    :deep(.mud-input-helper-text) {
+        color: var(--text-tertiary) !important;
+    }
+
+    /* Validation Summary */
+    :deep(.mud-validation-summary) {
+        background: rgba(239, 68, 68, 0.1) !important;
+        border: 1px solid rgba(239, 68, 68, 0.3) !important;
+        border-radius: 8px !important;
+        padding: 1rem !important;
+        margin-bottom: 1.5rem !important;
+        color: #fecaca !important;
+        font-size: 0.9rem;
+    }
+
+    :deep(.mud-validation-summary ul) {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+
+    :deep(.mud-validation-summary li) {
+        margin: 0.25rem 0;
+    }
+
+    /* Edit Form */
+    :deep(.mud-form) {
+        width: 100%;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .modal-content
+
+    {
+        padding: 2.5rem;
+        border-radius: 14px;
+    }
+
+    .modal-title {
+        font-size: 1.75rem;
+    }
+
+    .modal-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.75rem;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+    }
+
+    .login-btn {
+        padding: 1rem !important;
+        font-size: 0.9rem !important;
+    }
+
+    .form-footer {
+        font-size: 0.9rem;
+    }
+
+    .modal {
+        padding: 1.5rem;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .modal-content
+
+    {
+        padding: 2rem;
+        max-width: 100%;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        letter-spacing: 0.05em;
+    }
+
+    .modal-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+    }
+
+    .login-btn {
+        margin-top: 1.25rem;
+        padding: 0.95rem !important;
+    }
+
+    .form-footer {
+        font-size: 0.85rem;
+    }
+
+    .modal {
+        padding: 1rem;
+    }
+
+    }
+
 </style>
+
+
+    
+
 <div class="modal active">
     <div class="modal-content">
         <MudIconButton Icon="@Icons.Material.Filled.Close"
-                       Class="modal-close" />
+                           Class="modal-close" style="color:white" OnClick="CloseModal" />
 
         <h3 class="modal-title">WELCOME BACK</h3>
         <p class="modal-subtitle">Login to manage your team</p>
 
-        <EditForm Model="@_loginModel">
+        <EditForm Model="@_loginModel" OnValidSubmit="LoginUser">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
             <div class="form-group">
-                <label class="form-label">Email</label>
-                <MudTextField @bind-Value="_loginModel.Email"
+                <label class="form-label" style="color:white" >Email</label>
+                <MudTextField @bind-Value="Email"
                               Placeholder="your@email.com"
                               Class="form-input"
                               Required="true"
-                              Variant="Variant.Outlined" />
+                              Variant="Variant.Outlined" style="color:white" />
             </div>
 
             <div class="form-group">
-                <label class="form-label">Password</label>
-                <MudTextField @bind-Value="_loginModel.Password"
+                <label class="form-label" style="color:white">Password</label>
+                <MudTextField @bind-Value="Password"
                               InputType="InputType.Password"
-                              Placeholder="••••••••"
+                              Placeholder="Your password"
                               Class="form-input"
                               Required="true"
-                              Variant="Variant.Outlined" />
+                              Variant="Variant.Outlined" style="color:white" />
             </div>
+
+            
+
 
             <MudButton Type="Submit"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
-                       Class="btn btn-primary btn-full login-btn">
-                Login
+                       Class="btn btn-primary btn-full login-btn" OnClick="LoginUser">
+                @if (isSubmitting)
+                {
+                    <MudProgressCircular Indeterminate="true" Class="me-2">Submit...</MudProgressCircular>
+
+                }
+                else
+                {
+
+                }
+
+               login
             </MudButton>
 
             <div class="form-footer">
                 Don’t have an account?
-                <a href="#">Register here</a>
+                <a href="/register">Register here</a>
             </div>
         </EditForm>
     </div>
 </div>
 
-@code {
-    private LoginModel _loginModel = new();
 
-    public class LoginModel
-    {
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-    }
-}
+

@@ -1,0 +1,1025 @@
+﻿@* @page "/admin2"
+@using System.ComponentModel.DataAnnotations
+
+<div class="admin-page">
+    <!-- Navigation -->
+    <!-- Removed navbar as user has their own -->
+    <!-- Main Content -->
+    <div class="admin-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Admin Dashboard</h1>
+            <p class="page-subtitle">Manage tournament matches and settings</p>
+        </div>
+
+        <!-- Tournament Status Cards -->
+        <div class="status-cards">
+            <div class="status-card">
+                <div class="status-card-content">
+                    <div class="status-value">@teams.Count</div>
+                    <div class="status-label">Registered Teams</div>
+                    @if (CanStartTournament)
+                    {
+                        <div class="status-badge status-badge-ready">Ready to Start</div>
+                    }
+                    else
+                    {
+                        <div class="status-badge status-badge-warning">Need @(8 - teams.Count) more</div>
+                    }
+                </div>
+            </div>
+
+            <div class="status-card">
+                <div class="status-card-content">
+                    <div class="status-value status-value-blue">@PendingMatches</div>
+                    <div class="status-label">Pending Matches</div>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <div class="status-card-content">
+                    <div class="status-value status-value-emerald">@CompletedMatches</div>
+                    <div class="status-label">Completed Matches</div>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <div class="status-card-content">
+                    <div class="status-value status-value-amber">@matches.Count</div>
+                    <div class="status-label">Total Matches</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tournament Actions -->
+        <div class="section-card">
+            <h2 class="section-title">Tournament Actions</h2>
+            <div class="action-buttons">
+                <button class="btn-restart" @onclick="@(() => showRestartModal = true)">
+                    Restart Tournament
+                </button>
+                <button class="btn-start" disabled="@(!CanStartTournament)">
+                    @(CanStartTournament ? "Start Tournament" : "Need 8 Teams to Start")
+                </button>
+            </div>
+        </div>
+
+        <!-- Registered Teams -->
+        <div class="section-card">
+            <h2 class="section-title">Registered Teams</h2>
+            <div class="teams-grid">
+                @foreach (var team in TeamsRegistred)
+                {
+                    <div class="team-item">
+                        <div class="team-info">
+                            <img src="@team.Country?.FlagUrl"
+                                 style="width:24px; height:16px; border-radius:3px; object-fit:cover;" />
+                            <div class="team-code">@team.Country.Code</div>
+                            <div class="team-code">@team.Country.Name</div>
+                            
+                        </div>
+                        <div class="team-rating">@team.AverageRating.ToString("F1")</div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Match Management -->
+        <div class="section-card">
+            <h2 class="section-title">Match Management</h2>
+
+            <!-- Quarter Finals -->
+            <div class="match-round">
+                <div class="round-title">QUARTER FINALS</div>
+                <div class="match-list">
+                    @foreach (var match in matches.Where(m => m.Round == "Quarter Final"))
+                    {
+                        <div class="match-card">
+                            <div class="match-teams">
+                                <div class="match-team-row">
+                                    <div class="match-team-info">
+                                        <div class="match-team-code">@match.Code1</div>
+                                        <div class="match-team-name">@match.Team1</div>
+                                    </div>
+                                    <div class="match-score">@(match.Score1?.ToString() ?? "-")</div>
+                                </div>
+                                <div class="match-team-row">
+                                    <div class="match-team-info">
+                                        <div class="match-team-code">@match.Code2</div>
+                                        <div class="match-team-name">@match.Team2</div>
+                                    </div>
+                                    <div class="match-score">@(match.Score2?.ToString() ?? "-")</div>
+                                </div>
+                            </div>
+
+                            <div class="match-footer">
+                                <div class="match-status @GetStatusClass(match.Status)">@match.Status</div>
+
+                                @if (match.Status == MatchStatus.COMPLETED && !string.IsNullOrEmpty(match.Type))
+                                {
+                                    <div class="match-type">@match.Type</div>
+                                }
+
+                                @if (match.Status == MatchStatus.PENDING)
+                                {
+                                    <div class="match-buttons">
+                                        <button class="btn-play" @onclick="@(() => HandlePlayMatch(match))">
+                                            Play
+                                        </button>
+                                        <button class="btn-simulate" @onclick="@(() => HandleSimulateMatch(match))">
+                                            Simulate
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Semi Finals -->
+            <div class="match-round">
+                <div class="round-title">SEMI FINALS</div>
+                <div class="match-list">
+                    @foreach (var match in matches.Where(m => m.Round == "Semi Final"))
+                    {
+                        <div class="match-card">
+                            <div class="match-teams">
+                                <div class="match-team-row">
+                                    <div class="match-team-info">
+                                        <div class="match-team-code @(match.Team1 == "TBD" ? "tbd" : "")">@match.Code1</div>
+                                        <div class="match-team-name @(match.Team1 == "TBD" ? "tbd" : "")">@match.Team1</div>
+                                    </div>
+                                    <div class="match-score">@(match.Score1?.ToString() ?? "-")</div>
+                                </div>
+                                <div class="match-team-row">
+                                    <div class="match-team-info">
+                                        <div class="match-team-code @(match.Team2 == "TBD" ? "tbd" : "")">@match.Code2</div>
+                                        <div class="match-team-name @(match.Team2 == "TBD" ? "tbd" : "")">@match.Team2</div>
+                                    </div>
+                                    <div class="match-score">@(match.Score2?.ToString() ?? "-")</div>
+                                </div>
+                            </div>
+
+                            <div class="match-footer">
+                                <div class="match-status @GetStatusClass(match.Status)">@match.Status</div>
+
+                                @if (match.Status == MatchStatus.PENDING && match.Team1 != "TBD" && match.Team2 != "TBD")
+                                {
+                                    <div class="match-buttons">
+                                        <button class="btn-play" @onclick="@(() => HandlePlayMatch(match))">
+                                            Play
+                                        </button>
+                                        <button class="btn-simulate" @onclick="@(() => HandleSimulateMatch(match))">
+                                            Simulate
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Final -->
+            <div class="match-round">
+                <div class="round-title">FINAL</div>
+                <div class="match-list">
+                    @foreach (var match in matches.Where(m => m.Round == "Final"))
+                    {
+                        <div class="match-card">
+                            <div class="match-teams">
+                                <div class="match-team-row">
+                                    <div class="match-team-info">
+                                        <div class="match-team-code @(match.Team1 == "TBD" ? "tbd" : "")">@match.Code1</div>
+                                        <div class="match-team-name @(match.Team1 == "TBD" ? "tbd" : "")">@match.Team1</div>
+                                    </div>
+                                    <div class="match-score">@(match.Score1?.ToString() ?? "-")</div>
+                                </div>
+                                <div class="match-team-row">
+                                    <div class="match-team-info">
+                                        <div class="match-team-code @(match.Team2 == "TBD" ? "tbd" : "")">@match.Code2</div>
+                                        <div class="match-team-name @(match.Team2 == "TBD" ? "tbd" : "")">@match.Team2</div>
+                                    </div>
+                                    <div class="match-score">@(match.Score2?.ToString() ?? "-")</div>
+                                </div>
+                            </div>
+
+                            <div class="match-footer">
+                                <div class="match-status @GetStatusClass(match.Status)">@match.Status</div>
+
+                                @if (match.Status == MatchStatus.PENDING && match.Team1 != "TBD" && match.Team2 != "TBD")
+                                {
+                                    <div class="match-buttons">
+                                        <button class="btn-play" @onclick="@(() => HandlePlayMatch(match))">
+                                            Play
+                                        </button>
+                                        <button class="btn-simulate" @onclick="@(() => HandleSimulateMatch(match))">
+                                            Simulate
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restart Tournament Dialog -->
+    @if (showRestartModal)
+    {
+        <div class="modal-overlay" @onclick="@(() => showRestartModal = false)">
+            <div class="modal-content" @onclick:stopPropagation="true">
+                <h3 class="modal-title">Restart Tournament?</h3>
+                <p class="modal-text">
+                    This will reset all matches and start the tournament from Quarter Finals. This action cannot be undone.
+                </p>
+                <div class="modal-actions">
+                    <button class="btn-cancel" @onclick="@(() => showRestartModal = false)">Cancel</button>
+                    <button class="btn-confirm-danger" @onclick="HandleRestartTournament">Restart</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Match Action Dialog -->
+    @if (showMatchModal && selectedMatch != null)
+    {
+        <div class="modal-overlay" @onclick="@(() => { showMatchModal = false; selectedMatch = null; })">
+            <div class="modal-content" @onclick:stopPropagation="true">
+                <h3 class="modal-title">
+                    @(matchType == MatchType.PLAY ? "Play Match" : "Simulate Match")
+                </h3>
+
+                <div class="modal-match-info">
+                    <div class="modal-team">
+                        <div class="match-team-code">@selectedMatch.Code1</div>
+                        <div class="match-team-name">@selectedMatch.Team1</div>
+                    </div>
+                    <div class="modal-vs">vs</div>
+                    <div class="modal-team">
+                        <div class="match-team-code">@selectedMatch.Code2</div>
+                        <div class="match-team-name">@selectedMatch.Team2</div>
+                    </div>
+                </div>
+
+                <p class="modal-text">
+                    @(matchType == MatchType.PLAY
+                        ? "This will generate AI commentary with key moments until a winner emerges. Federations will be notified by email."
+                        : "This will instantly generate the final scoreline and goal scorers. Federations will be notified by email.")
+                </p>
+
+                <div class="modal-actions">
+                    <button class="btn-cancel" @onclick="@(() => { showMatchModal = false; selectedMatch = null; })">Cancel</button>
+                    <button class="@(matchType == MatchType.PLAY ? "btn-confirm-play" : "btn-confirm-simulate")" @onclick="HandleConfirmMatch">Confirm</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    /* Admin Dashboard Page Styles */
+
+    .admin-page {
+        min-height: 100vh;
+        background-color: #0a0e1a;
+        color: #ffffff;
+        padding: 2rem 0;
+    }
+
+    /* Removed navbar styles as user has their own navbar */
+
+    /* Container */
+    .admin-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    /* Page Header */
+    .page-header {
+        margin-bottom: 3rem;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #10b981;
+        margin: 0 0 0.5rem 0;
+        line-height: 1.2;
+    }
+
+    .page-subtitle {
+        font-size: 1.125rem;
+        color: #94a3b8;
+        margin: 0;
+    }
+
+    /* Status Cards */
+    .status-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .status-card {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border: 1px solid #334155;
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+        .status-card:hover {
+            transform: translateY(-4px);
+            border-color: #10b981;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
+        }
+
+    .status-card-content {
+        padding: 1.5rem;
+    }
+
+    .status-value {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #10b981;
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+
+    .status-value-blue {
+        color: #3b82f6;
+    }
+
+    .status-value-emerald {
+        color: #10b981;
+    }
+
+    .status-value-amber {
+        color: #f59e0b;
+    }
+
+    .status-label {
+        font-size: 0.875rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.375rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-top: 0.5rem;
+    }
+
+    .status-badge-ready {
+        background-color: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+    }
+
+    .status-badge-warning {
+        background-color: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+    }
+
+    /* Section Card */
+    .section-card {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0 0 1.5rem 0;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-restart {
+        background-color: transparent;
+        border: 2px solid #ef4444;
+        color: #ef4444;
+        padding: 0.875rem 1.75rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-restart:hover {
+            background-color: #ef4444;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+    .btn-start {
+        background-color: #10b981;
+        border: 2px solid #10b981;
+        color: #ffffff;
+        padding: 0.875rem 1.75rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-start:hover:not(:disabled) {
+            background-color: #059669;
+            border-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-start:disabled {
+            background-color: #334155;
+            border-color: #334155;
+            color: #64748b;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+    /* Teams Grid */
+    .teams-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+
+    .team-item {
+        background-color: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.2s;
+    }
+
+        .team-item:hover {
+            border-color: #10b981;
+            transform: translateX(4px);
+        }
+
+    .team-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .team-code {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+ /*        background-color: #1e293b;
+        border: 2px solid #10b981; */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #10b981;
+    }
+
+    .team-name {
+        font-weight: 600;
+        color: #ffffff;
+        font-size: 1.125rem;
+    }
+
+    .team-rating {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #f59e0b;
+    }
+
+    /* Match Management */
+    .match-round {
+        margin-bottom: 2.5rem;
+    }
+
+        .match-round:last-child {
+            margin-bottom: 0;
+        }
+
+    .round-title {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #10b981;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+
+    .match-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .match-card {
+        background-color: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        transition: all 0.2s;
+    }
+
+        .match-card:hover {
+            border-color: #10b981;
+        }
+
+    .match-teams {
+        margin-bottom: 1rem;
+    }
+
+    .match-team-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+    }
+
+        .match-team-row:first-child {
+            border-bottom: 1px solid #334155;
+        }
+
+    .match-team-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .match-team-code {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #1e293b;
+        border: 2px solid #10b981;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #10b981;
+    }
+
+        .match-team-code.tbd {
+            border-color: #64748b;
+            color: #64748b;
+        }
+
+    .match-team-name {
+        font-weight: 600;
+        color: #ffffff;
+        font-size: 1.125rem;
+    }
+
+        .match-team-name.tbd {
+            color: #64748b;
+            font-style: italic;
+        }
+
+    .match-score {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #10b981;
+        min-width: 40px;
+        text-align: center;
+    }
+
+    .match-footer {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+        padding-top: 1rem;
+        border-top: 1px solid #334155;
+    }
+
+    .match-status {
+        padding: 0.375rem 0.875rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-chip-pending {
+        background-color: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+    }
+
+    .status-chip-progress {
+        background-color: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+    }
+
+    .status-chip-completed {
+        background-color: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+    }
+
+    .match-type {
+        padding: 0.375rem 0.875rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        background-color: rgba(139, 92, 246, 0.15);
+        color: #a78bfa;
+    }
+
+    .match-buttons {
+        display: flex;
+        gap: 0.75rem;
+        margin-left: auto;
+    }
+
+    .btn-play {
+        background-color: #10b981;
+        border: none;
+        color: #ffffff;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-play:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+    .btn-simulate {
+        background-color: transparent;
+        border: 2px solid #10b981;
+        color: #10b981;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-simulate:hover {
+            background-color: #10b981;
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.75);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 1rem;
+    }
+
+    .modal-content {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 1rem;
+        padding: 2rem;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0 0 1rem 0;
+    }
+
+    .modal-text {
+        color: #94a3b8;
+        line-height: 1.6;
+        margin: 0 0 1.5rem 0;
+    }
+
+    .modal-match-info {
+        background-color: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+    }
+
+    .modal-team {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .modal-vs {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    .btn-cancel {
+        background-color: transparent;
+        border: 2px solid #64748b;
+        color: #94a3b8;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-cancel:hover {
+            border-color: #94a3b8;
+            color: #ffffff;
+        }
+
+    .btn-confirm-danger {
+        background-color: #ef4444;
+        border: none;
+        color: #ffffff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-confirm-danger:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+    .btn-confirm-play {
+        background-color: #10b981;
+        border: none;
+        color: #ffffff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-confirm-play:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+    .btn-confirm-simulate {
+        background-color: #3b82f6;
+        border: none;
+        color: #ffffff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-confirm-simulate:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .admin-container
+
+    {
+        padding: 0 1rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .status-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .teams-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .match-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .match-buttons {
+        width: 100%;
+        margin-left: 0;
+    }
+
+        .match-buttons button {
+            flex: 1;
+        }
+
+    .modal-match-info {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+        .modal-actions button {
+            width: 100%;
+        }
+
+    }
+</style>
+
+@code {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private enum MatchStatus { PENDING, IN_PROGRESS, COMPLETED }
+    private enum MatchType { PLAY, SIMULATE }
+
+    private class Team
+    {
+        public string Name { get; set; } = "";
+        public string Code { get; set; } = "";
+        public double Rating { get; set; }
+    }
+
+    private class Match
+    {
+        public string Id { get; set; } = "";
+        public string Round { get; set; } = "";
+        public string Team1 { get; set; } = "";
+        public string Code1 { get; set; } = "";
+        public string Team2 { get; set; } = "";
+        public string Code2 { get; set; } = "";
+        public int? Score1 { get; set; }
+        public int? Score2 { get; set; }
+        public MatchStatus Status { get; set; }
+        public string? Type { get; set; }
+    }
+
+    private bool showRestartModal = false;
+    private bool showMatchModal = false;
+    private Match? selectedMatch = null;
+    private MatchType matchType = MatchType.PLAY;
+
+    private List<Team> teams = new()
+    {
+        new Team { Name = "Nigeria", Code = "NG", Rating = 87.5 },
+        new Team { Name = "Angola", Code = "AO", Rating = 82.3 },
+        new Team { Name = "Cape Verde", Code = "CV", Rating = 79.8 },
+        new Team { Name = "South Africa", Code = "ZA", Rating = 84.2 },
+        new Team { Name = "Mali", Code = "ML", Rating = 88.1 },
+        new Team { Name = "Côte d'Ivoire", Code = "CI", Rating = 85.7 },
+        new Team { Name = "DR Congo", Code = "CD", Rating = 81.5 },
+        new Team { Name = "Guinea", Code = "GN", Rating = 80.9 },
+    };
+
+    private List<Match> matches = new()
+    {
+        new Match { Id = "qf1", Round = "Quarter Final", Team1 = "Nigeria", Code1 = "NG", Team2 = "Angola", Code2 = "AO", Score1 = 2, Score2 = 1, Status = MatchStatus.COMPLETED, Type = "PLAY" },
+        new Match { Id = "qf2", Round = "Quarter Final", Team1 = "Cape Verde", Code1 = "CV", Team2 = "South Africa", Code2 = "ZA", Status = MatchStatus.PENDING },
+        new Match { Id = "qf3", Round = "Quarter Final", Team1 = "Mali", Code1 = "ML", Team2 = "Côte d'Ivoire", Code2 = "CI", Score1 = 3, Score2 = 2, Status = MatchStatus.COMPLETED, Type = "SIMULATE" },
+        new Match { Id = "qf4", Round = "Quarter Final", Team1 = "DR Congo", Code1 = "CD", Team2 = "Guinea", Code2 = "GN", Status = MatchStatus.PENDING },
+        new Match { Id = "sf1", Round = "Semi Final", Team1 = "Nigeria", Code1 = "NG", Team2 = "TBD", Code2 = "?", Status = MatchStatus.PENDING },
+        new Match { Id = "sf2", Round = "Semi Final", Team1 = "Mali", Code1 = "ML", Team2 = "TBD", Code2 = "?", Status = MatchStatus.PENDING },
+        new Match { Id = "final", Round = "Final", Team1 = "TBD", Code1 = "?", Team2 = "TBD", Code2 = "?", Status = MatchStatus.PENDING },
+    };
+
+    private bool CanStartTournament => teams.Count >= 8;
+    private int CompletedMatches => matches.Count(m => m.Status == MatchStatus.COMPLETED);
+    private int PendingMatches => matches.Count(m => m.Status == MatchStatus.PENDING);
+
+    private void HandlePlayMatch(Match match)
+    {
+        selectedMatch = match;
+        matchType = MatchType.PLAY;
+        showMatchModal = true;
+    }
+
+    private void HandleSimulateMatch(Match match)
+    {
+        selectedMatch = match;
+        matchType = MatchType.SIMULATE;
+        showMatchModal = true;
+    }
+
+    private void HandleConfirmMatch()
+    {
+        if (selectedMatch == null) return;
+
+        var random = new Random();
+        var score1 = random.Next(0, 4);
+        var score2 = random.Next(0, 4);
+
+        var match = matches.FirstOrDefault(m => m.Id == selectedMatch.Id);
+        if (match != null)
+        {
+            match.Score1 = score1;
+            match.Score2 = score2;
+            match.Status = MatchStatus.COMPLETED;
+            match.Type = matchType.ToString();
+        }
+
+        showMatchModal = false;
+        selectedMatch = null;
+    }
+
+    private void HandleRestartTournament()
+    {
+        foreach (var match in matches)
+        {
+            match.Score1 = null;
+            match.Score2 = null;
+            match.Status = MatchStatus.PENDING;
+            match.Type = null;
+        }
+        showRestartModal = false;
+    }
+
+    private string GetStatusClass(MatchStatus status)
+    {
+        return status switch
+        {
+            MatchStatus.COMPLETED => "status-chip-completed",
+            MatchStatus.IN_PROGRESS => "status-chip-progress",
+            MatchStatus.PENDING => "status-chip-pending",
+            _ => "status-chip-pending"
+        };
+    }
+}
+ *@

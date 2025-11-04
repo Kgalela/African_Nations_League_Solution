@@ -1,4 +1,4 @@
-@AfricanNationsLeague.Api_HostAddress = http://localhost:5274
+@AfricanNationsLeague.Api_HostAddress = http://localhost:5098
 
 GET {{AfricanNationsLeague.Api_HostAddress}}/weatherforecast/
 Accept: application/json

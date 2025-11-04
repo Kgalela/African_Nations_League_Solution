@@ -1,0 +1,723 @@
+﻿@page "/admin"
+
+
+<PageTitle>Admin Dashboard - African Nations League</PageTitle>
+
+<div class="admin-dashboard">
+    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-8">
+        
+        <div class="dashboard-header mb-8">
+            <MudText Typo="Typo.h3" Class="dashboard-title">Admin Dashboard</MudText>
+            <MudText Typo="Typo.body1" Class="text-slate-400 mt-2">
+                Manage the African Nations League 2026 Tournament
+            </MudText>
+        </div>
+
+        <!-- Tournament Status Cards -->
+        <div class="status-cards">
+            <div class="status-card">
+                <div class="status-card-content">
+                    <div class="status-value">@TeamsRegistred.Count</div>
+                    <div class="status-label">Registered Teams</div>
+                    @if (TeamsRegistred.Count >= 8)
+                    {
+                        <div class="status-badge status-badge-ready">Ready to Start</div>
+                    }
+                    else
+                    {
+                        <div class="status-badge status-badge-warning">Need @(8 - TeamsRegistred.Count) more</div>
+                    }
+
+                </div>
+            </div>
+
+            <div class="status-card">
+                <div class="status-card-content">
+                    <div class="status-value status-value-blue">
+                        @(tournament?.Matches?.Count(m => !m.IsPlayed) ?? 0)
+                    </div>
+                    <div class="status-label">Pending Matches</div>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <div class="status-card-content">
+                    <div class="status-value status-value-emerald">@(tournament?.Matches?.Count(m => m.IsPlayed) ?? 0) </div>
+                    <div class="status-label">Completed Matches</div>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <div class="status-card-content">
+                    <div class="status-value status-value-amber"> @(tournament?.Matches?.Count() ?? 0)</div>
+                    <div class="status-label">Total Matches</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tournament Actions -->
+        <div class="section-card">
+            <h2 class="section-title">Tournament Actions</h2>
+            <div class="action-buttons">
+                <button class="btn-restart">
+                    Restart Tournament
+                </button>
+                <button class="btn-start" disabled="@(!CanStartTournament)" @onclick="StartTournament">
+                    @(CanStartTournament ? "Start Tournament" : "Need 8 Teams to Start")
+                </button>
+                <MudButton class="btn-simulate-stage" onclick="SimulateStage">Simulate Current Stage</MudButton>
+@*                 <button class="btn-simulate-stage" @onclick="SimulateStage">
+                    Simulate Current Stage
+                </button> *@
+            </div>
+        </div>
+
+
+    <div class="admin-container">
+   
+        <!-- Registered Teams -->
+        <div class="section-card">
+            <h2 class="section-title">Registered Teams</h2>
+            <div class="teams-grid">
+                @foreach (var team in TeamsRegistred)
+                {
+                    <div class="team-item">
+                        <div class="team-info">
+                            <img src="@team.Country?.FlagUrl"
+                                 style="width:24px; height:16px; border-radius:3px; object-fit:cover;" />
+                            <div class="team-code">@team.Country.Code</div>
+                            <div class="team-code">@team.Country.Name</div>
+                            
+                        </div>
+                        <div class="team-rating">@team.AverageRating.ToString("F1")</div>
+                    </div>
+                }
+            </div>
+        </div>
+        </div>
+        <!-- Match Management -->
+        <MudCardContent Style="    background-color: #1e293b; border: 1px solid #334155;border-radius: 1rem; padding: 2rem;margin-bottom: 2rem;">
+        <MudTable Items="@tournament?.Matches" Hover="true" Class="match-table">
+            <HeaderContent>
+
+               
+
+                        <MudTh Style="color: white; font-weight: bold;">Match</MudTh>
+                        <MudTh Style="color: white; font-weight: bold;">Stage</MudTh>
+                        <MudTh Style="color: white; font-weight: bold;">Status</MudTh>
+                        <MudTh Style="color: white; font-weight: bold;">Score</MudTh>
+                        <MudTh Style="color: white; font-weight: bold;">Actions</MudTh>
+                   
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Match">
+                    <div class="match-teams">
+                        <span class="team-name">@context.HomeCountry?.Name</span>
+                        <span class="vs-text">vs</span>
+                        <span class="team-name">@context.AwayCountry?.Name</span>
+                    </div>
+                </MudTd>
+
+                <MudTd DataLabel="Stage">
+                    <MudChip T="string" Size="Size.Small" Color="Color.Info">@context.Stage</MudChip>
+                </MudTd>
+
+                <MudTd DataLabel="Status">
+                    <MudChip T="string"
+                             Size="Size.Small"
+                             Color="@(context.IsPlayed ? Color.Success : Color.Warning)">
+                        @(context.IsPlayed ? "Completed" : "Pending")
+                    </MudChip>
+                </MudTd>
+
+                <MudTd DataLabel="Score">
+                    @if (context.IsPlayed)
+                    {
+                        <span class="score-display">@context.HomeScore - @context.AwayScore</span>
+                    }
+                    else
+                    {
+                        <span class="text-slate-500">-</span>
+                    }
+                </MudTd>
+
+                <MudTd DataLabel="Actions">
+                    @if (!context.IsPlayed)
+                    {
+                        <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
+                            <MudButton 
+                                Color="Color.Primary" 
+                                StartIcon="@Icons.Material.Filled.FastForward"
+                                           OnClick="@(() => SemiFinalSimlate(context.HomeTeamId, context.AwayTeamId))">
+                                    
+                                Simulate Stage
+                            </MudButton>
+                        </MudButtonGroup>
+                    }
+                    else
+                    {
+                            <MudButton Variant="Variant.Text"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Visibility"
+                                       OnClick="@(() => NavigateToMatchDetails(FindMatchId(context.HomeTeamId, context.AwayTeamId)))">
+                                View Details
+                            </MudButton>
+
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudCardContent>
+
+
+    </MudContainer>
+</div>
+
+
+
+
+
+
+
+<style>
+    /* Premium Admin Dashboard - Enterprise Grade Styling */
+
+    /* Premium Admin Dashboard - Fixed Layout CSS */
+
+    :root {
+        --bg-primary: #050810;
+        --bg-secondary: #0f1419;
+        --bg-tertiary: #1a2332;
+        --bg-hover: #242f3f;
+        --border-primary: #2d3b52;
+        --border-subtle: #1a2332;
+        --text-primary: #ffffff;
+        --text-secondary: #a0aac0;
+        --text-tertiary: #64748b;
+        --accent-cyan: #00d9ff;
+        --accent-blue: #3b82f6;
+        --accent-gold: #fbbf24;
+        --accent-success: #10b981;
+        --accent-warning: #f59e0b;
+        --accent-error: #ef4444;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .admin-page {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        padding: 2rem;
+    }
+
+    .admin-container {
+        max-width: 1440px;
+        margin: 0 auto;
+    }
+
+    /* Header Section */
+    .dashboard-header {
+        margin-bottom: 3rem;
+    }
+
+    .dashboard-title {
+        font-size: 2.75rem !important;
+        font-weight: 800 !important;
+        color: var(--accent-cyan) !important;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        margin: 0 !important;
+    }
+
+    .dashboard-subtitle {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        margin-top: 0.75rem;
+        font-weight: 400;
+    }
+
+    /* Status Cards */
+    .status-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .status-card {
+        background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+        border: 1px solid var(--border-primary);
+        border-radius: 12px;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 220px;
+    }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan) 50%, transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .status-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 20px 60px rgba(0, 217, 255, 0.12);
+        }
+
+            .status-card:hover::before {
+                opacity: 1;
+            }
+
+    .status-value {
+        font-size: 3.5rem;
+        font-weight: 900;
+        line-height: 1;
+        margin: 0 0 1.5rem 0;
+        letter-spacing: -0.02em;
+    }
+
+        .status-value.cyan {
+            color: var(--accent-cyan);
+        }
+
+        .status-value.blue {
+            color: var(--accent-blue);
+        }
+
+        .status-value.gold {
+            color: var(--accent-gold);
+        }
+
+    .status-label {
+        font-size: 0.75rem;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.625rem 1.25rem;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        width: fit-content;
+        transition: all 0.2s ease;
+        border: 1px solid;
+    }
+
+    .status-badge-ready {
+        background-color: rgba(16, 185, 129, 0.15);
+        color: #4ade80;
+        border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .status-badge-warning {
+        background-color: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    /* FIXED: Section Card - Proper Padding and Overflow */
+    .section-card {
+        background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+        border: 1px solid var(--border-primary);
+        border-radius: 12px;
+        padding: 2.5rem;
+        margin-bottom: 2.5rem;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    /* FIXED: Section Title - Full Width, No Cutoff */
+    .section-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin: 0 0 2rem 0;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        letter-spacing: -0.01em;
+        min-height: 40px;
+    }
+
+        .section-title::before {
+            content: '';
+            width: 5px;
+            height: 32px;
+            background: linear-gradient(180deg, var(--accent-cyan), var(--accent-blue));
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+    /* FIXED: Action Buttons - Proper Spacing and Styling */
+    .action-buttons {
+        display: flex;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        align-items: center;
+    }
+
+    .btn-restart,
+    .btn-start,
+    .btn-simulate-stage {
+        padding: 1rem 1.75rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        min-height: 44px;
+    }
+
+    .btn-restart {
+        background-color: transparent;
+        border: 2px solid var(--accent-error);
+        color: var(--accent-error);
+    }
+
+        .btn-restart:hover {
+            background-color: rgba(239, 68, 68, 0.15);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.25);
+            transform: translateY(-3px);
+        }
+
+    .btn-start {
+        background-color: var(--accent-cyan);
+        border: 2px solid var(--accent-cyan);
+        color: var(--bg-primary);
+        font-weight: 800;
+    }
+
+        .btn-start:hover:not(:disabled) {
+            background-color: #00b8d4;
+            border-color: #00b8d4;
+            box-shadow: 0 12px 32px rgba(0, 217, 255, 0.35);
+            transform: translateY(-3px);
+        }
+
+        .btn-start:disabled {
+            background-color: var(--bg-hover);
+            border-color: var(--bg-hover);
+            color: var(--text-tertiary);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+    .btn-simulate-stage {
+        background-color: var(--accent-blue);
+        border: 2px solid var(--accent-blue);
+        color: white;
+        font-weight: 800;
+    }
+
+        .btn-simulate-stage:hover {
+            background-color: #2563eb;
+            border-color: #2563eb;
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.35);
+            transform: translateY(-3px);
+        }
+
+    /* Teams Grid - Proper Spacing */
+    .teams-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .team-item {
+        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        border: 1px solid var(--border-primary);
+        border-radius: 10px;
+        padding: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.5rem;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+    }
+
+        .team-item:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(0, 217, 255, 0.15);
+        }
+
+    .team-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex: 1;
+    }
+
+    .team-flag {
+        font-size: 1.75rem;
+        flex-shrink: 0;
+    }
+
+    .team-code {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+/*         background-color: rgba(0, 217, 255, 0.1);
+        border: 1px solid rgba(0, 217, 255, 0.2); */
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--accent-cyan);
+        flex-shrink: 0;
+    }
+
+    .team-name {
+        font-weight: 700;
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        line-height: 1.4;
+        letter-spacing: -0.01em;
+    }
+
+    .team-rating {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--accent-gold);
+        min-width: 80px;
+        text-align: right;
+        letter-spacing: -0.02em;
+    }
+
+    /* Match Table */
+    .match-table {
+        width: 100% !important;
+        border-collapse: collapse;
+    }
+
+        .match-table th {
+            background-color: var(--bg-secondary) !important;
+            color: var(--accent-cyan) !important;
+            font-weight: 800 !important;
+            font-size: 0.75rem !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.1em !important;
+            border-bottom: 2px solid var(--border-primary) !important;
+            padding: 1.5rem !important;
+            text-align: left;
+        }
+
+        .match-table td {
+            padding: 1.5rem !important;
+            border-bottom: 1px solid var(--border-subtle) !important;
+            color: var(--text-primary) !important;
+            font-size: 0.95rem;
+        }
+
+        .match-table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+            .match-table tbody tr:hover {
+                background-color: rgba(0, 217, 255, 0.08) !important;
+            }
+
+            .match-table tbody tr:last-child td {
+                border-bottom: none !important;
+            }
+
+    .match-teams {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .vs-text {
+        color: var(--text-tertiary);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 0 0.75rem;
+    }
+
+    .score-display {
+        font-size: 1.25rem;
+        font-weight: 900;
+        color: var(--accent-cyan);
+        letter-spacing: -0.01em;
+    }
+
+    /* MudChip Overrides */
+    :deep(.mud-chip) {
+        font-weight: 800 !important;
+        font-size: 0.7rem !important;
+        letter-spacing: 0.08em !important;
+        text-transform: uppercase !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 6px !important;
+    }
+
+    :deep(.mud-chip.mud-chip-success) {
+        background-color: rgba(16, 185, 129, 0.2) !important;
+        color: #4ade80 !important;
+    }
+
+    :deep(.mud-chip.mud-chip-info) {
+        background-color: rgba(59, 130, 246, 0.2) !important;
+        color: #60a5fa !important;
+    }
+
+    /* Responsive */
+    @@media (max-width: 1024px) {
+        .admin-container
+
+    {
+        padding: 0;
+    }
+
+    .section-card {
+        padding: 2rem;
+    }
+
+    .teams-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .admin-page
+
+    {
+        padding: 1.5rem 1rem;
+    }
+
+    .dashboard-title {
+        font-size: 2rem !important;
+    }
+
+    .status-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        gap: 0.75rem;
+    }
+
+    .btn-restart,
+    .btn-start,
+    .btn-simulate-stage {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.8rem;
+        flex: 1;
+    }
+
+    .teams-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .team-item {
+        padding: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .match-table th,
+    .match-table td {
+        padding: 1rem !important;
+        font-size: 0.85rem;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .dashboard-title
+
+    {
+        font-size: 1.5rem !important;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn-restart,
+    .btn-start,
+    .btn-simulate-stage {
+        width: 100%;
+        flex: unset;
+    }
+
+    .team-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .team-rating {
+        text-align: center;
+    }
+
+    }
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

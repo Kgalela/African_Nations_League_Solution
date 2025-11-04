@@ -7,69 +7,69 @@
 
 <MudLayout>
     <MudAppBar Elevation="0" Class="app-bar px-4"
-               Style="background: #0f172a !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;">
+               Style="background: linear-gradient(135deg, #050810 0%, #0f1419 100%); border-bottom: 1.5px solid #2d3b52; backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05); padding: 0.75rem 2rem;">
 
         <MudContainer MaxWidth="MaxWidth.False" Class="d-flex align-center justify-between w-100">
 
-            
-              
-
-
-            
-
             <!-- Logo -->
-            <MudText Typo="Typo.h6" Class="logo-text">
-                <span class="gradient-text">AFRICAN NATIONS LEAGUE</span>
+            <MudText Typo="Typo.h6" Class="logo-text" Style="font-weight: 900; letter-spacing: 0.08em; font-size: 1.35rem; color: #ffffff; text-transform: uppercase; flex-shrink: 0;">
+                <span style="background: linear-gradient(135deg, #00d9ff 0%, #3b82f6 50%, #fbbf24 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 2px 8px rgba(0, 217, 255, 0.15));">AFRICAN NATIONS LEAGUE</span>
             </MudText>
 
             <!-- Centered Navigation -->
-            <div class="menulink d-flex align-center justify-center flex-grow-1 nav-center">
-                <ul class="nav-links">
-                    <li>
-                        <a class="nav-link" href="/">Home</a>
+            <div class="menulink d-flex align-center justify-center flex-grow-1 nav-center" style="gap: 1rem;">
+                <ul style="display: flex; gap: 3rem; list-style: none; padding: 0; margin: 0; align-items: center; justify-content: center; background: transparent;">
+                    <li style="position: relative; display: inline-flex; align-items: center; gap: 0.625rem;">
+                        <MudIconButton Icon="@Icons.Material.Filled.Home" Color="Color.Inherit" Style="color: #a0aac0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); font-size: 1.25rem;" />
+                        <a href="/" style="color: #a0aac0; font-weight: 700; font-size: 0.95rem; border: none; text-decoration: none; padding: 0.75rem 0; display: inline-flex; align-items: center; gap: 0.625rem; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); letter-spacing: 0.05em; text-transform: uppercase; position: relative; background: linear-gradient(90deg, #00d9ff, #3b82f6) bottom left; background-size: 100% 2.5px; background-repeat: no-repeat; background-position: 0 100%;" onmouseover="this.style.color='#00d9ff'; this.style.backgroundSize='100% 2.5px';" onmouseout="this.style.color='#a0aac0'; this.style.backgroundSize='0 2.5px';">Home</a>
                     </li>
-                    <li>
-                        <a class="nav-link" href="/bracket">Bracket</a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="/scorers">Top Scorers</a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="/teams">Teams</a>
+                    <li style="position: relative; display: inline-flex; align-items: center; gap: 0.625rem;">
+                        <MudIconButton Icon="@Icons.Material.Filled.EmojiEvents" Color="Color.Inherit" Style="color: #a0aac0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); font-size: 1.25rem;" />
+                        <a href="/scorers" style="color: #a0aac0; font-weight: 700; font-size: 0.95rem; border: none; text-decoration: none; padding: 0.75rem 0; display: inline-flex; align-items: center; gap: 0.625rem; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); letter-spacing: 0.05em; text-transform: uppercase; position: relative; background: linear-gradient(90deg, #00d9ff, #3b82f6) bottom left; background-size: 0 2.5px; background-repeat: no-repeat; background-position: 0 100%;" onmouseover="this.style.color='#00d9ff'; this.style.backgroundSize='100% 2.5px';" onmouseout="this.style.color='#a0aac0'; this.style.backgroundSize='0 2.5px';">Top Scorers</a>
                     </li>
                 </ul>
-
-                
-
-              @*   <MudButton Href="/" Variant="Variant.Text" Color="Color.Inherit" Class="nav-link">Home</MudButton>
-                <MudButton Href="/bracket" Variant="Variant.Text" Color="Color.Inherit" Class="nav-link">Bracket</MudButton>
-                <MudButton Href="/scorers" Variant="Variant.Text" Color="Color.Inherit" Class="nav-link">Top Scorers</MudButton>
-                <MudButton Href="/teams" Variant="Variant.Text" Color="Color.Inherit" Class="nav-link">Teams</Mud  *@
             </div>
 
             <!-- Right-aligned Buttons -->
-            <div class="navbutton d-flex align-center justify-end">
-                <MudButton Variant="Variant.Outlined" Color="Color.Inherit" Class="ml-4 login-btn">
+            <div class="navbutton d-flex align-center justify-end" style="gap: 1.25rem;">
+                <MudChip T="string" Color="Color.Dark" Variant="Variant.Filled" Class="mx-2" Style="background: linear-gradient(135deg, rgba(0, 217, 255, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%); border: 1.5px solid rgba(0, 217, 255, 0.2); color: #00d9ff; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.625rem 1rem; box-shadow: 0 4px 12px rgba(0, 217, 255, 0.15);">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" /> Visitor
+                </MudChip>
+                <MudButton Variant="Variant.Filled" Style="background: linear-gradient(135deg, #00d9ff 0%, #00b8d4 100%); color: #050810; font-weight: 800; padding: 0.875rem 2rem; border-radius: 10px; box-shadow: 0 12px 32px rgba(0, 217, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.9rem; border: none; position: relative; overflow: hidden; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);" Class="ml-4 login-btn" OnClick="OnLoginClick" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 16px 40px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 12px 32px rgba(0, 217, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2)';">
                     Login
                 </MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Success" Class="ml-2 register-btn">
-                    Register Team
-                </MudButton>
             </div>
-          
 
-            <div class="DrawerToggleButton">
-                <MudIconButton Icon="@Icons.Material.Filled.Menu" style="color:white" Edge="Edge.Start" />
-
+            <div class="DrawerToggleButton" style="display: none; margin-left: auto;">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Style="color: #ffffff;" Edge="Edge.Start" />
             </div>
         </MudContainer>
     </MudAppBar>
+
 
 
     <MudMainContent>
         @Body
     </MudMainContent>
 </MudLayout>
+
+@code{
+
+    @inject NavigationManager NavigationManager
+
+
+
+
+
+    //function clicking on Login button
+
+    private void OnLoginClick()
+    {
+        NavigationManager.NavigateTo("/login");
+    }
+
+
+}
 
 
 @* <div class="page">

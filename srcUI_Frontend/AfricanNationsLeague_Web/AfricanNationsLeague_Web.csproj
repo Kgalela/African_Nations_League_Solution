@@ -12,4 +12,8 @@
     <PackageReference Include="MudBlazor.ThemeManager" Version="3.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Web.Infrustructure\Web.Infrustructure.csproj" />
+  </ItemGroup>
+
 </Project>
