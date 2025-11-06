@@ -27,7 +27,8 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish ./src_Backend/AfricanNationsLeague.Api/AfricanNationsLeague.Api.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+
+        run: dotnet publish -c Release --property:./src_Backend/AfricanNationsLeague.Api/AfricanNationsLeague.Api.csproj'${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
