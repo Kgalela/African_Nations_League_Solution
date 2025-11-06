@@ -25,7 +25,12 @@
                     </li>
                     <li style="position: relative; display: inline-flex; align-items: center; gap: 0.625rem;">
                         <MudIconButton Icon="@Icons.Material.Filled.EmojiEvents" Color="Color.Inherit" Style="color: #a0aac0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); font-size: 1.25rem;" />
-                        <a href="/scorers" style="color: #a0aac0; font-weight: 700; font-size: 0.95rem; border: none; text-decoration: none; padding: 0.75rem 0; display: inline-flex; align-items: center; gap: 0.625rem; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); letter-spacing: 0.05em; text-transform: uppercase; position: relative; background: linear-gradient(90deg, #00d9ff, #3b82f6) bottom left; background-size: 0 2.5px; background-repeat: no-repeat; background-position: 0 100%;" onmouseover="this.style.color='#00d9ff'; this.style.backgroundSize='100% 2.5px';" onmouseout="this.style.color='#a0aac0'; this.style.backgroundSize='0 2.5px';">Top Scorers</a>
+                        <a href="/#tournementId" style="color: #a0aac0; font-weight: 700; font-size: 0.95rem; border: none; text-decoration: none; padding: 0.75rem 0; display: inline-flex; align-items: center; gap: 0.625rem; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); letter-spacing: 0.05em; text-transform: uppercase; position: relative; background: linear-gradient(90deg, #00d9ff, #3b82f6) bottom left; background-size: 0 2.5px; background-repeat: no-repeat; background-position: 0 100%;" onmouseover="this.style.color='#00d9ff'; this.style.backgroundSize='100% 2.5px';" onmouseout="this.style.color='#a0aac0'; this.style.backgroundSize='0 2.5px';">Match Scorers</a>
+
+                    </li>
+                    <li style="position: relative; display: inline-flex; align-items: center; gap: 0.625rem;">
+                        <MudIconButton  Color="Color.Inherit" Style="color: #a0aac0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); font-size: 1.25rem;" />
+                        <a href="/#matchresults" style="color: #a0aac0; font-weight: 700; font-size: 0.95rem; border: none; text-decoration: none; padding: 0.75rem 0; display: inline-flex; align-items: center; gap: 0.625rem; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); letter-spacing: 0.05em; text-transform: uppercase; position: relative; background: linear-gradient(90deg, #00d9ff, #3b82f6) bottom left; background-size: 0 2.5px; background-repeat: no-repeat; background-position: 0 100%;" onmouseover="this.style.color='#00d9ff'; this.style.backgroundSize='100% 2.5px';" onmouseout="this.style.color='#a0aac0'; this.style.backgroundSize='0 2.5px';"><span class="soccer-ball">⚽</span>Tournament Bracket</a>
                     </li>
                 </ul>
             </div>
@@ -46,8 +51,6 @@
         </MudContainer>
     </MudAppBar>
 
-
-
     <MudMainContent>
         @Body
     </MudMainContent>
@@ -58,11 +61,6 @@
     @inject NavigationManager NavigationManager
 
 
-
-
-
-    //function clicking on Login button
-
     private void OnLoginClick()
     {
         NavigationManager.NavigateTo("/login");
@@ -72,24 +70,3 @@
 }
 
 
-@* <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
-
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div> *@

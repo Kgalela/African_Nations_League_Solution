@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net;
+using System.Text;
 using System.Text.Json;
 using Web.Infrustructure.Models;
 
@@ -104,13 +105,20 @@ namespace Web.Infrustructure.Services
 
         public async Task<TournamentBracketDto?> GetTournamentAsync()
         {
-            var response = await _httpClient.GetAsync("/api/tournament");
+            var response = await _httpClient.GetAsync("api/tournament/tournament");
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                // No tournament exists yet
+                return null;
+            }
             if (!response.IsSuccessStatusCode)
+            {
                 throw new Exception($"Failed to fetch tournament: {response.StatusCode}");
-
+            }
             var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<TournamentBracketDto?>(json, _jsonOptions);
+            return JsonSerializer.Deserialize<TournamentBracketDto>(json, _jsonOptions);
         }
+
 
         public async Task<TournamentBracketDto?> StartTournamentAsync()
         {
@@ -207,7 +215,31 @@ namespace Web.Infrustructure.Services
                    ?? throw new Exception("Failed to deserialize TournamentBracketDto from API response.");
         }
 
+        public async Task<TournamentBracketDto?> RestartTournamentAsync()
+        {
+            var response = await _httpClient.PostAsync("/api/Tournament/restart", null);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Restart tournament failed: {response.StatusCode}, Details: {error}");
+            }
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<TournamentBracketDto?>(json, _jsonOptions);
+        }
 
+        public async Task SendEmail(SendEmailRequestDto dto)
+        {
+            var jsonContent = JsonSerializer.Serialize(dto, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("/api/SendEmail/email", httpContent);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"API call failed: {response.StatusCode}, Details: {error}");
+            }
+        }
 
     }
 }

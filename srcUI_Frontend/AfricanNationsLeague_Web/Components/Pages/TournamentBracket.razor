@@ -673,7 +673,7 @@
 
 
 <MudContainer>
-    <div class="unified-bracket-container">
+    <div class="unified-bracket-container" >
         <div class="bracket-grid">
             <!-- Quarter Finals Left -->
             <div class="bracket-section quarter-left">
@@ -853,56 +853,3 @@
     </div>
 </MudContainer>
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="top-scorers-container">
-    <div class="top-scorers-header">
-        <MudText Typo="Typo.h4" Class="top-scorers-title">Top Scorers</MudText>
-        <MudButton Variant="Variant.Outlined" Class="view-all-btn" OnClick="@(() => Navigation.NavigateTo("/top-scorers"))">View All</MudButton>
-    </div>
-
-    <div class="scorers-grid">
-        <div class="scorer-card">
-            <div class="rank-number">1</div>
-            <div class="scorer-info">
-                <div class="player-name">Victor Osimhen</div>
-                <div class="player-country">
-                    <span class="country-code-small">NG</span>
-                    <span class="country-name">Nigeria</span>
-                </div>
-            </div>
-            <div class="goals-count">
-                <span class="goals-number">5</span>
-                <span class="soccer-ball">⚽</span>
-            </div>
-        </div>
-
-        <div class="scorer-card">
-            <div class="rank-number">2</div>
-            <div class="scorer-info">
-                <div class="player-name">Sadio Mané</div>
-                <div class="player-country">
-                    <span class="country-code-small">ML</span>
-                    <span class="country-name">Mali</span>
-                </div>
-            </div>
-            <div class="goals-count">
-                <span class="goals-number">4</span>
-                <span class="soccer-ball">⚽</span>
-            </div>
-        </div>
-
-        <div class="scorer-card">
-            <div class="rank-number">3</div>
-            <div class="scorer-info">
-                <div class="player-name">Sébastien Haller</div>
-                <div class="player-country">
-                    <span class="country-code-small">CI</span>
-                    <span class="country-name">Côte d'Ivoire</span>
-                </div>
-            </div>
-            <div class="goals-count">
-                <span class="goals-number">3</span>
-                <span class="soccer-ball">⚽</span>
-            </div>
-        </div>
-    </div>
-</MudContainer>

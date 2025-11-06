@@ -1,0 +1,340 @@
+﻿@page "/results"
+@using MudBlazor
+@inject IDialogService DialogService
+
+
+<div style="
+    width: -webkit-fill-available;" >
+<MudContainer MaxWidth="MaxWidth.Large">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <MudText Typo="Typo.h3" Style="font-weight: 900; color: #00d9ff; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.75rem;">
+                Match Results
+            </MudText>
+            <MudText Typo="Typo.body1" Style="color: #a0aac0; font-size: 1.05rem; font-weight: 400; letter-spacing: 0.3px;">
+                View all tournament matches and detailed scorelines
+            </MudText>
+        </div>
+
+        <!-- Matches Table -->
+        <MudPaper Style="background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%); border: 1.5px solid #2d3b52; border-radius: 14px; box-shadow: 0 20px 60px rgba(0, 217, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.08); padding: 0;">
+            <MudTable Items="@MatchesList" Hover="true" Striped="false" Dense="false" Style="background: transparent;">
+                <ColGroup>
+                    <col style="width: 25%;" />
+                    <col style="width: 15%;" />
+                    <col style="width: 25%;" />
+                    <col style="width: 15%;" />
+                    <col style="width: 20%;" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh Style="background: linear-gradient(135deg, rgba(26, 35, 50, 0.7) 0%, rgba(15, 20, 25, 0.7) 100%); border-bottom: 1.5px solid #2d3b52; padding: 1.25rem; color: #a0aac0; font-weight: 800; text-align: left; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;">Match</MudTh>
+                    <MudTh Style="background: linear-gradient(135deg, rgba(26, 35, 50, 0.7) 0%, rgba(15, 20, 25, 0.7) 100%); border-bottom: 1.5px solid #2d3b52; padding: 1.25rem; color: #a0aac0; font-weight: 800; text-align: center; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;">Score</MudTh>
+                    <MudTh Style="background: linear-gradient(135deg, rgba(26, 35, 50, 0.7) 0%, rgba(15, 20, 25, 0.7) 100%); border-bottom: 1.5px solid #2d3b52; padding: 1.25rem; color: #a0aac0; font-weight: 800; text-align: left; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;">Stage</MudTh>
+                    <MudTh Style="background: linear-gradient(135deg, rgba(26, 35, 50, 0.7) 0%, rgba(15, 20, 25, 0.7) 100%); border-bottom: 1.5px solid #2d3b52; padding: 1.25rem; color: #a0aac0; font-weight: 800; text-align: center; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;">Status</MudTh>
+                    <MudTh Style="background: linear-gradient(135deg, rgba(26, 35, 50, 0.7) 0%, rgba(15, 20, 25, 0.7) 100%); border-bottom: 1.5px solid #2d3b52; padding: 1.25rem; color: #a0aac0; font-weight: 800; text-align: right; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase;">Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd Style="border-bottom: 1px solid #2d3b52; padding: 1.25rem; color: #ffffff; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="text-align: center;">
+                                
+                                <div style="font-size: 0.9rem; color: #00d9ff; font-weight: 800;">@context.HomeCountry.Name</div>
+                            </div>
+                            <div style="color: #64748b; font-weight: 600;">vs</div>
+                            <div style="text-align: center;">
+                                
+                                <div style="font-size: 0.9rem; color: #00d9ff; font-weight: 800;">@context.AwayCountry.Name</div>
+                            </div>
+                        </div>
+                    </MudTd>
+                    <MudTd Style="border-bottom: 1px solid #2d3b52; padding: 1.25rem; text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 900; color: #00d9ff; letter-spacing: -0.02em;">
+                            @context.HomeScore - @context.AwayScore
+                        </div>
+                    </MudTd>
+                    <MudTd Style="border-bottom: 1px solid #2d3b52; padding: 1.25rem; color: #a0aac0; font-weight: 600;">
+                        @context.Stage
+                    </MudTd>
+                    <MudTd Style="border-bottom: 1px solid #2d3b52; padding: 1.25rem; text-align: center;">
+                        <div style="display: inline-block; padding: 0.375rem 0.75rem; border-radius: 6px; font-weight: 800; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; border: 1.5px solid; @(context.IsPlayed ? "background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3);" : "background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3);")">
+                            @(context.IsPlayed ? "Completed" : "Pending")
+                        </div>
+                    </MudTd>
+                    <MudTd Style="border-bottom: 1px solid #2d3b52; padding: 1.25rem; text-align: right;">
+                        <MudButton Variant="Variant.Filled"
+                                   OnClick="@(() => ShowScoreline(context))"
+                                   Style="background: linear-gradient(135deg, #00d9ff 0%, #00b8d4 100%); color: #050810;">
+                            View Scoreline
+                        </MudButton>
+
+
+
+
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper> 
+    </MudContainer>
+</div>
+
+<MudMessageBox @ref="_mudMessageBox"
+               Title=""
+               CancelText="CLOSE"
+               YesText=""
+               Style="width:600px;"
+           
+               Class="scoreline-popup">
+
+    <MessageContent >
+
+        @if (selectedMatch != null)
+        {
+            <!-- Header Bar -->
+            <div class="score-header">
+                <span class="score-title">Match Scoreline</span>
+                <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="() => _mudMessageBox.Close()" Class="close-icon" />
+            </div>
+
+            <!-- Stage and Date -->
+            <div class="stage-container">
+                <div class="stage-text">@selectedMatch.Stage</div>
+                <div class="stage-date">@DateTime.Now.ToString("MMMM dd, yyyy")</div>
+            </div>
+
+            <!-- Score + Teams -->
+            <MudGrid Class="score-grid">
+                <MudItem sm="4" Class="team-block">
+                    <div class="team-name">@selectedMatch.HomeCountry.Name</div>
+                    <div class="team-code">@selectedMatch.HomeCountry.Name</div>
+                </MudItem>
+
+                <MudItem sm="4" Class="score-box">
+                    @selectedMatch.HomeScore<span> - </span>@selectedMatch.AwayScore
+                </MudItem>
+
+                <MudItem sm="4" Class="team-block">
+                    <div class="team-name">@selectedMatch.AwayCountry.Name</div>
+                    <div class="team-code">@selectedMatch.AwayCountry.Name</div>
+                </MudItem>
+            </MudGrid>
+
+            <!-- Goal Scorers -->
+            <MudGrid Class="goals-grid">
+
+                <MudItem sm="6">
+                    <div class="goals-title">GOAL SCORERS</div>
+
+                    @if (selectedMatch.HomeGoals.Any())
+                    {
+                        @foreach (var goal in selectedMatch.HomeGoals)
+                        {
+                            <div class="goal-card">
+                                <MudIcon Icon="@Icons.Material.Filled.SportsSoccer" Class="goal-icon" />
+                                <div class="goal-info">
+                                    <div class="goal-name">@goal.PlayerName</div>
+                                    <div class="goal-minute">@goal.Minute'</div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="goal-none">No goals scored</div>
+                    }
+                </MudItem>
+
+
+                <MudItem sm="6">
+                    <div class="goals-title">GOAL SCORERS</div>
+
+                    @if (selectedMatch.AwayGoals.Any())
+                    {
+                        @foreach (var goal in selectedMatch.AwayGoals)
+                        {
+                            <div class="goal-card">
+                                <MudIcon Icon="@Icons.Material.Filled.SportsSoccer" Class="goal-icon" />
+                                <div class="goal-info">
+                                    <div class="goal-name">@goal.PlayerName</div>
+                                    <div class="goal-minute">@goal.Minute'</div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="goal-none">No goals scored</div>
+                    }
+                </MudItem>
+
+            </MudGrid>
+        }
+    </MessageContent>
+
+</MudMessageBox>
+
+<style>
+    .mud-dialog mud-dialog-width-sm mud-message-box {
+        --bg-primary: #050810 !important;
+        --bg-secondary: #0f1419 !important;
+        --bg-tertiary: #1a2332 !important;
+        --bg-hover: #242f3f !important;
+        --border-primary: #2d3b52 !important;
+        --border-subtle: #1a2332 !important;
+        --text-primary: #ffffff !important;
+        --text-secondary: #a0aac0 !important;
+        --text-tertiary: #64748b !important;
+        --accent-cyan: #00d9ff !important;
+        --accent-blue: #3b82f6 !important;
+        --accent-gold: #fbbf24 !important;
+        --accent-success: #10b981 !important;
+        --accent-warning: #f59e0b !important;
+        --accent-error: #ef4444 !important;
+
+        
+    }
+
+    .mud-message-box {
+        --bg-primary: #050810 !important;
+        --bg-secondary: #0f1419 !important;
+        --bg-tertiary: #1a2332 !important;
+        --bg-hover: #242f3f !important;
+        --border-primary: #2d3b52 !important;
+        --border-subtle: #1a2332 !important;
+        --text-primary: #ffffff !important;
+        --text-secondary: #a0aac0 !important;
+        --text-tertiary: #64748b !important;
+        --accent-cyan: #00d9ff !important;
+        --accent-blue: #3b82f6 !important;
+        --accent-gold: #fbbf24 !important;
+        --accent-success: #10b981 !important;
+        --accent-warning: #f59e0b !important;
+        --accent-error: #ef4444 !important;
+        max-width: 600px !important; /* or any value you want */
+        width: 100% !important;
+    }
+
+    .mud-dialog {
+        color: rgba(255, 255, 255, 1) !important;
+        background-color: #000 !important;
+    }
+    .scoreline-popup {
+        background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+        border: 1px solid var(--border-primary);
+        border-radius: 14px;
+        padding: 0;
+        color: var(--text-primary);
+    }
+
+    /* Header */
+    .score-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-primary);
+    }
+
+    .score-title {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--accent-cyan);
+    }
+
+    .close-icon {
+        color: var(--text-secondary) !important;
+    }
+
+    /* Stage & Date */
+    .stage-container {
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+
+    .stage-text {
+        font-size: .9rem;
+        font-weight: 800;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+    }
+
+    .stage-date {
+        font-size: .75rem;
+        color: var(--text-tertiary);
+        margin-top: 2px;
+    }
+
+    /* Team & Score */
+    .score-grid {
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+    .team-block .team-name {
+        color: var(--accent-cyan);
+        font-size: 1.65rem;
+        font-weight: 800;
+    }
+
+    .team-code {
+        font-size: .8rem;
+        color: var(--text-tertiary);
+    }
+
+    .score-box {
+        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        border: 1px solid var(--border-primary);
+        border-radius: 10px;
+        padding: 0.9rem 0.5rem;
+        font-weight: 900;
+        font-size: 2.4rem;
+        color: var(--accent-cyan);
+    }
+
+    /* Goal Scorers */
+    .goals-grid {
+        margin: 2.5rem 0;
+    }
+
+    .goals-title {
+        font-size: .85rem;
+        font-weight: 900;
+        color: var(--accent-gold);
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+    }
+
+    .goal-card {
+        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        border: 1px solid var(--border-primary);
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: .75rem;
+        width: fit-content;
+    }
+
+    .goal-icon {
+        color: var(--accent-cyan);
+    }
+
+    .goal-name {
+        font-weight: 800;
+        font-size: .9rem;
+    }
+
+    .goal-minute {
+        font-size: .75rem;
+        color: var(--text-tertiary);
+    }
+
+    .goal-none {
+        color: var(--text-tertiary);
+        font-size: .85rem;
+    }
+
+</style>
+
+

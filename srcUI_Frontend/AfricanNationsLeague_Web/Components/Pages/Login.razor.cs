@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using Web.Infrustructure.Enums;
 using Web.Infrustructure.Models;
 using Web.Infrustructure.Services;
@@ -33,6 +35,7 @@ namespace AfricanNationsLeague_Web.Components.Pages
             NavigationManager.NavigateTo("/");
         }
 
+        private bool _showPassword = false;
 
 
         public class LoginModel
@@ -40,6 +43,7 @@ namespace AfricanNationsLeague_Web.Components.Pages
             [Required(ErrorMessage = "Email is required")]
             [EmailAddress(ErrorMessage = "Invalid email address")]
             public string Email { get; set; } = string.Empty;
+
             [Required(ErrorMessage = "Password is required")]
             public string Password { get; set; } = string.Empty;
         }
@@ -52,43 +56,68 @@ namespace AfricanNationsLeague_Web.Components.Pages
 
             try
             {
-
-
                 var loginDetailsDto = new LoginDto
                 {
-                    Email = Email,
-                    Password = Password
+                    Email = _loginModel.Email,
+                    Password = _loginModel.Password
                 };
-
 
                 var results = await africanNationsLeagueApi.LoginUser(loginDetailsDto);
 
-                Snackbar.Add("Welcome back!", Severity.Success);
-                await Task.Delay(4000);
+                if (results == null)
+                {
+                    loginFailed = true;
+                    isSubmitting = false;
+                    StateHasChanged();
+                    return;
+
+
+                }
+
+                var claims = new List<System.Security.Claims.Claim>
+                {
+                  new Claim(ClaimTypes.Name, results.FullName),
+                    new Claim(ClaimTypes.Email, results.Email),
+                    new Claim(ClaimTypes.Role, results.Role.ToString())
+                };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+
+                await Task.Delay(2000);
+
                 if (results.Role == Role.Representative)
                 {
-                    NavigationManager.NavigateTo($"/register-team/{results.Email}");
-
+                    NavigationManager?.NavigateTo($"/register-team/{results.Email}");
+                    Snackbar.Add("Welcome back!", Severity.Success);
+                }
+                else if (results.Role == Role.Admin)
+                {
+                    NavigationManager?.NavigateTo($"/admin/{results.Email}");
+                    Snackbar.Add("Welcome back!", Severity.Success);
                 }
                 else
                 {
-                    NavigationManager.NavigateTo("/");
+                    Snackbar.Add("You not have access", Severity.Error);
+                    NavigationManager?.NavigateTo("/access-denied");
                 }
-
-
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"Email or password is invald! Please try again: {ex.Message}", Severity.Error);
-                NavigationManager?.NavigateTo("/login");
+                Snackbar.Add($"Login failed invalid details", Severity.Error);
+                //NavigationManager?.NavigateTo("/login");
             }
-            finally
-            {
-                isSubmitting = false;
-                StateHasChanged();
-                ClearFormFields();
-            }
+
+            isSubmitting = false;
+            StateHasChanged();
+            ClearFormFields();
+
         }
+
+        private bool loginFailed = false;
+
+
 
         public void NavigateToRegister()
         {

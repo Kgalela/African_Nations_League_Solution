@@ -1,8 +1,10 @@
 ﻿@page "/"
 @using AfricanNationsLeague_Web.Components.Pages
+@inject IJSRuntime JS
 
 
-<section class="hero">
+
+<section class="hero" >
     <div class="hero-content">
         <div class="tournament-badge">
             <span class="live-dot"></span>
@@ -13,13 +15,28 @@
             Experience the future of African football. Watch nations compete in the inaugural tournament that will reshape continental competition.
         </p>
         <div class="hero-buttons">
-            <button class="btn btn-primary btn-large">Register Your Team</button>
-            <button class="btn btn-secondary btn-large">View Bracket</button>
+            <button class="btn btn-primary btn-large" @onclick="NavigateToRegisterTeam">Register Your Team</button>
+            <button class="btn btn-secondary btn-large" @onclick="NavigateToRegisterUser">Register user</button>
         </div>
     </div>
-
-    <TournamentBracket />
+    <div id="tournementId">
+        <TournamentBracket @ref="tournamentBracketRef" />
+    </div>
+   
+   
+    <div id="matchresults" style="padding-top:8rem;">
+        <Results />
+    </div>
+    
 </section>
+<script>
+    window.scrollToElement = function (elementId) {
+        var el = document.getElementById(elementId);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+</script>
 
 
 <style>

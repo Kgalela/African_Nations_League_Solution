@@ -31,20 +31,20 @@ public class TournamentController : ControllerBase
     public async Task<IActionResult> SimulateStage() =>
         Ok(await _service.SimulateCurrentStageAsync());
 
-    [HttpPost("restart")]
-    public async Task<ActionResult<Tournament>> RestartTournament()
-    {
-        var tournament = await _service.StartTournamentAsync();
-        return Ok(tournament);
-    }
+    //[HttpPost("restart")]
+    //public async Task<ActionResult<Tournament>> RestartTournament()
+    //{
+    //    var tournament = await _service.StartTournamentAsync();
+    //    return Ok(tournament);
+    //}
 
     // ✅ Get Current Tournament (for the UI)
-    [HttpGet]
-    public async Task<ActionResult<Tournament>> GetTournament()
-    {
-        var result = await _service.GetActiveAsync();
-        return Ok(result);
-    }
+    //[HttpGet]
+    //public async Task<ActionResult<Tournament>> GetTournament()
+    //{
+    //    var result = await _service.GetActiveAsync();
+    //    return Ok(result);
+    //}
 
 
     [HttpPost("semifinals/simulate")]
@@ -56,6 +56,24 @@ public class TournamentController : ControllerBase
 
         return Ok(match);
     }
+
+    [HttpPost("restart")]
+    public async Task<IActionResult> RestartTournament()
+    {
+        await _service.RestartTournamentAsync();
+        return Ok(new { message = "Tournament restarted." });
+    }
+
+    [HttpGet("tournament")]
+    public async Task<ActionResult<Tournament?>> GetTournament()
+    {
+        var tournament = await _service.GetOrCreateTournamentAsync();
+        if (tournament == null)
+            return NotFound("Not enough teams to start a tournament.");
+        return Ok(tournament);
+    }
+
+
 }
 
 
@@ -64,39 +82,3 @@ public class TournamentController : ControllerBase
 
 
 
-
-//[ApiController]
-//[Route("api/[controller]")]
-//public class TournamentController : ControllerBase
-//{
-//    private readonly TournamentService _service;
-
-//    public TournamentController(TournamentService service)
-//    {
-//        _service = service;
-//    }
-
-//    [HttpGet("active")]
-//    public async Task<IActionResult> GetActive()
-//    {
-//        var t = await _service.GetActiveAsync();
-//        return Ok(t);
-//    }
-
-//    [HttpPost("start")]
-//    public async Task<IActionResult> Start()
-//    {
-//        // you already have your start logic; keep it
-//        // just return the created tournament
-//        var t = await _service.StartTournamentAsync(); // your existing method
-//        return Ok(t);
-//    }
-
-//    // NEW: simulate the CURRENT stage (Quarterfinal, then Semifinal, then Final)
-//    [HttpPost("simulate-stage")]
-//    public async Task<IActionResult> SimulateStage()
-//    {
-//        var t = await _service.SimulateCurrentStageAsync();
-//        return Ok(t);
-//    }
-//}

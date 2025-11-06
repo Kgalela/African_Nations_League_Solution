@@ -1,3 +1,6 @@
+using AfricanNationsLeague.Api.Abstracts;
+using AfricanNationsLeague.Api.Options;
+using AfricanNationsLeague.Api.Services;
 using AfricanNationsLeague.Application.Services;
 using AfricanNationsLeague.Domain.Enums;
 using AfricanNationsLeague.Infrastructure.Configuration;
@@ -34,14 +37,21 @@ builder.Services.AddScoped<CountryService>();
 builder.Services.AddScoped<IMongoDatabase>(sp =>
     sp.GetRequiredService<IMongoContext>().Database);
 builder.Services.AddHttpClient();
-builder.Services.AddHttpClient<FootballApiService>();
 
 
 
+builder.Services.Configure<GmailOptions>(
+    builder.Configuration.GetSection(GmailOptions.GmailOptionsKey))
+    ;
+
+builder.Services.AddScoped<IMailService, GmailService>();
 
 
 
 BsonSerializer.RegisterSerializer(typeof(Role), new EnumSerializer<Role>(MongoDB.Bson.BsonType.String));
+
+var config = builder.Configuration;
+
 
 
 

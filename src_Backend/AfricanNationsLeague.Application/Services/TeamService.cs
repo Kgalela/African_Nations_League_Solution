@@ -8,21 +8,24 @@ namespace AfricanNationsLeague.Application.Services
     {
         private readonly ITeamRepository _repo;
         private readonly Random _random = new();
-        private readonly FootballApiService _footballApi;
+
         private readonly TournamentService _tournamentService;
 
-        public TeamService(ITeamRepository repo, FootballApiService footballApi, TournamentService tournamentService)
+
+        public TeamService(ITeamRepository repo, TournamentService tournamentService)
         {
             _repo = repo;
-            _footballApi = footballApi;
+
             _tournamentService = tournamentService;
+
         }
 
         public async Task<TeamDto> CreateTeamAsync(CreateTeamDto dto)
         {
-            var players = GeneratePlayers();
+            //var players = await GeneratePlayersAsync(dto.Country.Name);
 
-            //var players = await GeneratePlayers(dto.Country.Name);
+
+            var players = GeneratePlayers();
 
 
             var average = players.Average(p => p.Ratings[p.NaturalPosition]);
@@ -57,53 +60,24 @@ namespace AfricanNationsLeague.Application.Services
             };
         }
 
-        //private async Task<List<Player>> GeneratePlayers(string countryName)
-        //{
-        //    var positions = new List<string>();
-        //    positions.AddRange(Enumerable.Repeat("GK", 3));
-        //    positions.AddRange(Enumerable.Repeat("DF", 7));
-        //    positions.AddRange(Enumerable.Repeat("MD", 8));
-        //    positions.AddRange(Enumerable.Repeat("AT", 5));
 
-        //    var random = new Random();
 
-        //    Fetch real players(fallback if empty)
-        //        var realNames = await _footballApi.GetPlayersByCountryAsync(countryName);
-        //    if (!realNames.Any())
-        //    {
-        //        realNames = Enumerable.Range(1, 23)
-        //            .Select(i => $"Player_{i}")
-        //            .ToList();
-        //    }
 
-        //    var players = new List<Player>();
 
-        //    foreach (var pos in positions)
-        //    {
-        //        var nameIndex = random.Next(realNames.Count);
-        //        var name = realNames[nameIndex];
-        //        realNames.RemoveAt(nameIndex);
 
-        //        var player = new Player
-        //        {
-        //            Name = name,
-        //            NaturalPosition = pos,
-        //            Ratings = new Dictionary<string, int>()
-        //        };
 
-        //        foreach (var p in new[] { "GK", "DF", "MD", "AT" })
-        //        {
-        //            player.Ratings[p] = (p == pos)
-        //                ? random.Next(50, 101)
-        //                : random.Next(20, 60);
-        //        }
 
-        //        players.Add(player);
-        //    }
-
-        //    players[0].IsCaptain = true;
-        //    return players;
-        //}
+        private string ConvertPosition(string pos)
+        {
+            return pos switch
+            {
+                "Goalkeeper" => "GK",
+                "Defender" => "DF",
+                "Midfielder" => "MD",
+                "Attacker" => "AT",
+                _ => "MD"
+            };
+        }
 
 
         private List<Player> GeneratePlayers()

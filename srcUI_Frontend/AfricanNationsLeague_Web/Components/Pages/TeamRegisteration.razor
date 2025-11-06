@@ -1,5 +1,7 @@
 ﻿@page "/register-team/{email}"
-
+@using Microsoft.AspNetCore.Authorization
+@* @attribute [Authorize(Roles = "Representative")]
+ *@
 @inject ISnackbar Snackbar
 
 <div class="team-registration-page" style="background:linear-gradient(145deg,#0b132b,#111a33);min-height:100vh;padding:3rem;">
@@ -24,7 +26,7 @@
                     <!-- Step 1: Team Information -->
                     <MudStep Title="Team Information" Style="color:white;">
                         <MudAlert Severity="Severity.Info" Variant="Variant.Outlined"
-                                  Style="background-color:#0f172a;border-left:4px solid #3b82f6;color:#93c5fd;margin-bottom:1rem;">
+                                  Style="background-color:#0f172a;border-left:4px solid #3b82f6;color:#93c5fd;margin-bottom:1rem;color:white;">
                             Please provide your team information to begin registration.
                         </MudAlert>
 
@@ -46,7 +48,7 @@
                                               Placeholder="Head Coach full name"
                                               Variant="Variant.Outlined"
                                               Required="true"
-                                              Style="background-color:#0f172a;border-radius:8px;border:1px solid #334155;" />
+                                              Style="background-color:#0f172a;border-radius:8px;border:1px solid #334155;color:white;" />
                             </MudItem>
 
                             <MudItem xs="12">
@@ -55,7 +57,7 @@
                                               Variant="Variant.Outlined"
                                               Required="true"
                                               ReadOnly="true"
-                                              Style="background-color:#0f172a;border-radius:8px;border:1px solid #334155;" />
+                                              Style="background-color:#0f172a;border-radius:8px;border:1px solid #334155;color:white;" />
                             </MudItem>
                         </MudGrid>
 
@@ -204,6 +206,13 @@
         padding: 2.5rem 2rem !important;
     }
 
+    .mud-input > input.mud-input-root-outlined.mud-input-root-adorned-end, div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-end {
+        padding-right: 0;
+        padding-inline-end: 0;
+        padding-inline-start: 14px;
+        color: white;
+    }
+
     /* Registration Header */
     .registration-header {
         text-align: center;
@@ -327,7 +336,7 @@
 
     /* Grid Layout */
     .mud-grid {
-        gap: 1.5rem !important;
+       /*  gap: 1.5rem !important; */
         margin-top: 1.5rem !important;
     }
 
@@ -479,6 +488,13 @@
         letter-spacing: 0.05em;
     }
 
+    .mud-stepper .mud-stepper-nav .mud-step .mud-step-label .mud-step-label-content
+    Specificity: (0,5,0) {
+        width: 100%;
+        color: #fff;
+        --mud-ripple-color: var(--mud-palette-text-secondary);
+        text-align: start;
+    }
     /* Position Group Cards */
     :deep(.mud-card) {
         background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%) !important;
@@ -610,6 +626,23 @@
         font-weight: 800;
     }
 
+    .mud-button-label{
+        color:white !important;
+    }
+
+    mud-button-label {
+        width: 100%;
+        display: inherit;
+        align-items: inherit;
+        justify-content: inherit;
+        color: white;
+    }
+
+    .mud-stepper .mud-stepper-nav .mud-step.active .mud-step-label-content
+    Specificity: (0,5,0) {
+        color: #e9ecef;
+        --mud-ripple-color: var(--mud-palette-text-primary);
+    }
     /* Responsive Design */
     @@media (max-width: 1024px) {
         .team-registration-page

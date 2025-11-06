@@ -14,11 +14,12 @@ namespace Web.Infrustructure.Services
         Task<TournamentBracketDto?> GetTournamentAsync();
         Task<TournamentBracketDto?> StartTournamentAsync();
         Task<TournamentBracketDto?> SimulateStageAsync();
+        Task<TournamentBracketDto?> RestartTournamentAsync();
         Task<TournamentBracketDto?> SimulateStageSemiFinalsAsync(string homeId, string awayId);
         Task<UserDto?> GetUserByEmail(string email);
 
         Task<MatchDto> GetMatchByID(string id);
-
+        Task SendEmail(SendEmailRequestDto sendEmailRequest);
         Task<List<MatchDto>> GetAllMatches();
 
         Task<MatchDto> MathchSimulateMatch(string homeTeamId, string awayTeamId, string stage);

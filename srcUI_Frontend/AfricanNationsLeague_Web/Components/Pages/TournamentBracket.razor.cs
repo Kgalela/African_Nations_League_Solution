@@ -14,6 +14,8 @@ namespace AfricanNationsLeague_Web.Components.Pages
         MatchDto? finalMatch;
         TournamentBracketDto? semiFinal;
 
+
+
         protected override async Task OnInitializedAsync()
         {
             await LoadTournament();
@@ -40,20 +42,11 @@ namespace AfricanNationsLeague_Web.Components.Pages
             StateHasChanged();
         }
 
-        private async Task StartTournament()
+        // Add this method here
+        public async Task ReloadAsync()
         {
-            tournament = await africanNationsLeagueApi.StartTournamentAsync();
-            await LoadTournament();
+            tournament = await africanNationsLeagueApi.GetTournamentAsync();
+            StateHasChanged();
         }
-
-        private async Task SimulateStage()
-        {
-            tournament = await africanNationsLeagueApi.SimulateStageAsync();
-            await LoadTournament();
-        }
-
-
-
-
     }
 }

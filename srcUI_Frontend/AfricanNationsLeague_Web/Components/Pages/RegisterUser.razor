@@ -3,6 +3,112 @@
 @inject ISnackbar Snackbar
 
 
+<div class="modal active">
+    <div class="modal-content">
+        <MudIconButton Icon="@Icons.Material.Filled.Close"
+                       Class="modal-close" style="color:white" OnClick="CloseModal" />
+
+        <h3 class="modal-title">CREATE ACCOUNT</h3>
+        <p class="modal-subtitle">Join the African Nations League</p>
+   
+
+        <EditForm Model="@_registerModel" OnValidSubmit="CreatUser">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <MudGrid GutterSize="3">
+                <MudItem xs="12" sm="6">
+                    <label class="form-label" style="color:white">Full Name</label>
+                    <MudTextField @bind-Value="_registerModel.firstName"
+                                  Placeholder="Your Name"
+                                  Class="form-input"
+                                  For="@(() => _registerModel.firstName)"
+                                  Required="true"
+                                  Variant="Variant.Outlined"
+                                  Style="color:white;" />
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <label class="form-label" style="color:white">Email</label>
+                    <MudTextField @bind-Value="_registerModel.Email"
+                                  InputType="InputType.Email"
+                                  Placeholder="your@email.com"
+                                  Class="form-input"
+                                  For="@(() => _registerModel.Email)"
+                                  Required="true"
+                                  Variant="Variant.Outlined"
+                                  Style="color:white;" />
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <label class="form-label" style="color:white">Country</label>
+                    <MudSelect @bind-Value="_registerModel.SelectedCountry"
+                               Variant="Variant.Outlined"
+                               Clearable
+                               Placeholder="Your country"
+                               Style="color:white;">
+                        @foreach (var country in countries)
+                        {
+                            <MudSelectItem Value="@country.Code">
+                                <img src="@country.FlagUrl"
+                                     alt="@country.Name flag"
+                                     style="height:16px;vertical-align:middle;margin-right:8px;" />
+                                @country.Name
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <label class="form-label" style="color:white">Role</label>
+                    <MudSelect @bind-Value="_registerModel.SelectedRole"
+                               Variant="Variant.Outlined"
+                               Placeholder="Your Role">
+                        @foreach (var role in Enum.GetValues(typeof(Role)).Cast<Role>())
+                        {
+                            <MudSelectItem Value="@role.ToString()">@role.ToString()</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+
+            <MudItem Style="padding-top:9px;">
+                <label class="form-label" style="color:white">Password</label>
+                <MudTextField @bind-Value="_registerModel.Password"
+                              InputType="InputType.Password"
+                              Placeholder="Your password"
+                              Class="form-input"
+                              For="@(() => _registerModel.Password)"
+                              Required="true"
+                              Variant="Variant.Outlined"
+                              Style="color:white;" />
+            </MudItem>
+
+            <MudButton Type="Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Class="btn btn-primary btn-full login-btn" OnClick="CreatUser">
+
+                @if (isSubmitting)
+                {
+                    <MudProgressCircular Indeterminate="true"
+                                         Class="me-2"></MudProgressCircular>
+                }
+
+                Register
+            </MudButton>
+
+            <div class="form-footer">
+                Already have an account?
+                <a href="/login">Login here</a>
+            </div>
+        </EditForm>
+
+
+    </div>
+</div>
+
+
 <style>
     /* Premium Registration Page - Enterprise Grade Styling */
 
@@ -45,9 +151,6 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(135deg, rgba(5, 8, 16, 0.95) 0%, rgba(15, 20, 25, 0.95) 100%);
-        backdrop-filter: blur(12px);
-        z-index: 2000;
         align-items: center;
         justify-content: center;
         padding: 2rem;
@@ -58,18 +161,21 @@
         }
 
     @@keyframes fadeIn {
-        from
+        from {
+            opacity: 0;
+        }
 
-    {
-        opacity: 0;
+        to {
+            opacity: 1;
+        }
     }
 
-    to {
-        opacity: 1;
+    .mud-input > input.mud-input-root-outlined.mud-input-root-adorned-end, div.mud-input-slot.mud-input-root-outlined.mud-input-root-adorned-end {
+        padding-right: 0;
+        padding-inline-end: 0;
+        padding-inline-start: 14px;
+        color: white;
     }
-
-    }
-
     /* Modal Content Container */
     .modal-content {
         background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
@@ -85,18 +191,15 @@
     }
 
     @@keyframes modalSlideIn {
-        from
+        from {
+            opacity: 0;
+            transform: translateY(-30px) scale(0.95);
+        }
 
-    {
-        opacity: 0;
-        transform: translateY(-30px) scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
     }
 
     /* Modal Close Button */
@@ -383,182 +486,80 @@
 
     /* Responsive Design */
     @@media (max-width: 768px) {
-        .modal-content
+        .modal-content {
+            padding: 2.5rem;
+            border-radius: 14px;
+        }
 
-    {
-        padding: 2.5rem;
-        border-radius: 14px;
-    }
+        .modal-title {
+            font-size: 1.75rem;
+        }
 
-    .modal-title {
-        font-size: 1.75rem;
-    }
+        .modal-subtitle {
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
 
-    .modal-subtitle {
-        font-size: 0.95rem;
-        margin-bottom: 2rem;
-    }
+        :deep(.mud-grid) {
+            gap: 1rem !important;
+        }
 
-    :deep(.mud-grid) {
-        gap: 1rem !important;
-    }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
 
-    .form-group {
-        margin-bottom: 1.25rem;
-    }
+        .form-label {
+            font-size: 0.9rem;
+        }
 
-    .form-label {
-        font-size: 0.9rem;
-    }
+        .login-btn {
+            padding: 1rem !important;
+            font-size: 0.9rem !important;
+        }
 
-    .login-btn {
-        padding: 1rem !important;
-        font-size: 0.9rem !important;
-    }
+        .form-footer {
+            font-size: 0.9rem;
+        }
 
-    .form-footer {
-        font-size: 0.9rem;
-    }
-
-    .modal {
-        padding: 1.5rem;
-    }
-
+        .modal {
+            padding: 1.5rem;
+        }
     }
 
     @@media (max-width: 480px) {
-        .modal-content
+        .modal-content {
+            padding: 2rem;
+            max-width: 100%;
+        }
 
-    {
-        padding: 2rem;
-        max-width: 100%;
-    }
+        .modal-title {
+            font-size: 1.5rem;
+            letter-spacing: 0.05em;
+        }
 
-    .modal-title {
-        font-size: 1.5rem;
-        letter-spacing: 0.05em;
-    }
+        .modal-subtitle {
+            font-size: 0.9rem;
+        }
 
-    .modal-subtitle {
-        font-size: 0.9rem;
-    }
+        .form-label {
+            font-size: 0.85rem;
+        }
 
-    .form-label {
-        font-size: 0.85rem;
-    }
+        .login-btn {
+            margin-top: 1.25rem;
+            padding: 0.95rem !important;
+        }
 
-    .login-btn {
-        margin-top: 1.25rem;
-        padding: 0.95rem !important;
-    }
+        .form-footer {
+            font-size: 0.85rem;
+        }
 
-    .form-footer {
-        font-size: 0.85rem;
-    }
+        .modal {
+            padding: 1rem;
+        }
 
-    .modal {
-        padding: 1rem;
-    }
-
-    :deep(.mud-grid) {
-        gap: 0.75rem !important;
-    }
-
+        :deep(.mud-grid) {
+            gap: 0.75rem !important;
+        }
     }
 </style>
-
-<div class="modal active">
-    <div class="modal-content">
-        <MudIconButton Icon="@Icons.Material.Filled.Close"
-                       Class="modal-close" style="color:white" OnClick="CloseModal" />
-
-        <h3 class="modal-title">CREATE ACCOUNT</h3>
-        <p class="modal-subtitle">Join the African Nations League</p>
-        <EditForm Model="@_registerModel" OnValidSubmit="CreatUser">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <MudGrid GutterSize="3">
-                <MudItem xs="12" sm="6">
-                    <label class="form-label" style="color:white">Full Name</label>
-                    <MudTextField @bind-Value="firstName"
-                                  Placeholder="Your Name"
-                                  Class="form-input"
-                                  Required="true"
-                                  Variant="Variant.Outlined"
-                                  Style="color:white; " />
-                </MudItem>
-
-                <MudItem xs="12" sm="6">
-                    <label class="form-label" style="color:white">Email</label>
-                    <MudTextField @bind-Value="Email"
-                                  Placeholder="your@email.com"
-                                  Class="form-input"
-                                  Required="true"
-                                  Variant="Variant.Outlined"
-                                  Style="color:white; " />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <label class="form-label" style="color:white">Country</label>
-                    <MudSelect @bind-Value="SelectedCountry" Variant="Variant.Outlined" Clearable Style="color:white;" Placeholder="Your country">
-                        @foreach (var country in countries)
-                        {
-                            <MudSelectItem Value="@country.Code">
-                                <img src="@country.FlagUrl" alt="@country.Name flag" style="height:16px;vertical-align:middle;margin-right:8px;" />
-                                @country.Name
-                            </MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
-
-                <MudItem xs="12" sm="6">
-                    <label class="form-label" style="color:white">Role</label>
-                    <MudSelect @bind-Value="SelectedRole" Variant="Variant.Outlined" Placeholder="Your Role">
-                        @foreach (var role in Enum.GetValues(typeof(Role)).Cast<Role>())
-                        {
-                            <MudSelectItem Value="@role.ToString()">@role.ToString()</MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
-
-            </MudGrid>
-               <MudItem Style="padding-top:9px;">
-                <label class="form-label" style="color:white">Password</label>
-            <MudTextField @bind-Value="Password"
-                          InputType="InputType.Password"
-                          Placeholder="Your password"
-                          Class="form-input"
-                          Required="true"
-                          Variant="Variant.Outlined"
-                          Style="color:white;" />
-            </MudItem>
-
-
-            <MudButton Type="Submit"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Class="btn btn-primary btn-full login-btn" OnClick="CreatUser">
-            
-                @if (isSubmitting)
-                {
-                    <MudProgressCircular Indeterminate="true" Class="me-2">Submit...</MudProgressCircular>
-
-                }
-                else
-                {
-
-                }
-
-               Booking
-                Register
-            </MudButton>
-
-            <div class="form-footer">
-                Already have an account?
-                <a href="/login">Login here</a>
-            </div>
-        </EditForm>
-
-    </div>
-</div>
-
-

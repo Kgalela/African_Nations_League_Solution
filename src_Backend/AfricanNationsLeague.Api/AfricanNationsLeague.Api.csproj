@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Web.Infrustructure\Web.Infrustructure.csproj" />
     <ProjectReference Include="..\AfricanNationsLeague.Application\AfricanNationsLeague.Application.csproj" />
     <ProjectReference Include="..\AfricanNationsLeague.Infrastructure\AfricanNationsLeague.Infrastructure.csproj" />
   </ItemGroup>

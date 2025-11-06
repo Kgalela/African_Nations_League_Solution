@@ -9,5 +9,6 @@ namespace AfricanNationsLeague.Infrastructure.Interface
         Task<Tournament?> GetByIdAsync(string id, CancellationToken ct = default);
         Task UpdateAsync(Tournament tournament, CancellationToken ct = default);
         Task DeleteAsync(string id, CancellationToken ct = default);
+
     }
 }

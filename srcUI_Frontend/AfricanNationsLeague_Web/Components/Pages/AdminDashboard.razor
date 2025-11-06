@@ -1,4 +1,6 @@
-﻿@page "/admin"
+﻿@page "/admin/{email}"
+@using Microsoft.AspNetCore.Authorization
+@* @attribute [Authorize(Roles = "Admin")] *@
 
 
 <PageTitle>Admin Dashboard - African Nations League</PageTitle>
@@ -59,16 +61,18 @@
         <div class="section-card">
             <h2 class="section-title">Tournament Actions</h2>
             <div class="action-buttons">
-                <button class="btn-restart">
-                    Restart Tournament
+                <button class="btn-start" disabled="@(!CanStartTournament)" @onclick="ResetTournament">
+                    @(CanStartTournament ? "Restart Tournament" : "Need 8 Teams to Start")
                 </button>
-                <button class="btn-start" disabled="@(!CanStartTournament)" @onclick="StartTournament">
-                    @(CanStartTournament ? "Start Tournament" : "Need 8 Teams to Start")
-                </button>
-                <MudButton class="btn-simulate-stage" onclick="SimulateStage">Simulate Current Stage</MudButton>
-@*                 <button class="btn-simulate-stage" @onclick="SimulateStage">
-                    Simulate Current Stage
+@*                 <button class="btn-start" disabled="@(!CanStartTournament)" @onclick="StartTournament">
+                    @(CanStartTournament ? "start Tournament" : "Need 8 Teams to Start")
                 </button> *@
+
+                <button class="btn-simulate-stage" disabled="@(!CanStartTournament)" @onclick="SimulateStage">
+                    @(CanStartTournament ? "Simulate Current Stage" : "Need 8 Teams to Start")
+                </button>
+                @* <MudButton class="btn-simulate-stage" onclick="SimulateStage">Simulate Current Stage</MudButton> *@
+
             </div>
         </div>
 
@@ -174,16 +178,7 @@
     </MudContainer>
 </div>
 
-
-
-
-
-
-
 <style>
-    /* Premium Admin Dashboard - Enterprise Grade Styling */
-
-    /* Premium Admin Dashboard - Fixed Layout CSS */
 
     :root {
         --bg-primary: #050810;
@@ -227,6 +222,11 @@
         max-width: 1440px;
         margin: 0 auto;
     }
+
+    .mud-button-label {
+    color:white !important;
+    }
+
 
     /* Header Section */
     .dashboard-header {
@@ -358,7 +358,7 @@
         transition: all 0.3s ease;
     }
 
-    /* FIXED: Section Title - Full Width, No Cutoff */
+
     .section-title {
         font-size: 1.75rem;
         font-weight: 800;
@@ -380,7 +380,7 @@
             flex-shrink: 0;
         }
 
-    /* FIXED: Action Buttons - Proper Spacing and Styling */
+
     .action-buttons {
         display: flex;
         gap: 1.25rem;

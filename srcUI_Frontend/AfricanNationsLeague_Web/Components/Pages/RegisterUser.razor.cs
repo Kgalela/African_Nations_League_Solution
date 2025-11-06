@@ -24,11 +24,7 @@ namespace AfricanNationsLeague_Web.Components.Pages
         Snackbar snackbar;
 
         // Properties to bind to the form inputs
-        public string firstName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string SelectedCountry { get; set; }
-        public string SelectedRole { get; set; } = string.Empty;
+
         private bool isSubmitting = false;
         protected override async Task OnInitializedAsync()
         {
@@ -49,40 +45,142 @@ namespace AfricanNationsLeague_Web.Components.Pages
         }
 
 
+        //public async Task CreatUser()
+        //{
+        //    isSubmitting = true;
+        //    StateHasChanged();
+
+        //    try
+        //    {
+        //        var selectedCountryObj = countries.FirstOrDefault(c => c.Code == SelectedCountry);
+
+        //        var registerDto = new UserDto
+        //        {
+        //            FullName = firstName,
+        //            Email = Email,
+        //            PasswordHash = Password,
+        //            Country = new Country
+        //            {
+
+        //                Code = selectedCountryObj?.Code ?? string.Empty,
+        //                Name = selectedCountryObj?.Name ?? string.Empty,
+        //                FlagUrl = selectedCountryObj?.FlagUrl ?? string.Empty
+        //            },
+        //            Role = (Role)(int)Enum.Parse<Role>(SelectedRole),
+        //            CreatedAt = DateTime.UtcNow
+        //        };
+
+        //        await africanNationsLeagueApi.RegisterUser(registerDto);
+
+        //        Snackbar.Add("You have successfully registered! We are redirecting you to the Login page!", Severity.Success);
+        //        await Task.Delay(4000);
+        //        NavigationManager?.NavigateTo("/login");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Snackbar.Add($"Registration failed: {ex.Message}", Severity.Error);
+        //    }
+        //    finally
+        //    {
+        //        isSubmitting = false;
+        //        StateHasChanged();
+        //        ClearFormFields();
+        //    }
+        //}
+        //public async Task CreatUser()
+        //{
+        //    isSubmitting = true;
+        //    StateHasChanged();
+
+        //    try
+        //    {
+        //        var selectedCountryObj = countries
+        //            .FirstOrDefault(c => c.Code == _registerModel.SelectedCountry);
+
+        //        var registerDto = new UserDto
+        //        {
+        //            FullName = _registerModel.firstName,
+        //            Email = _registerModel.Email,
+        //            PasswordHash = _registerModel.Password,
+        //            Country = new Country
+        //            {
+        //                Code = selectedCountryObj?.Code ?? string.Empty,
+        //                Name = selectedCountryObj?.Name ?? string.Empty,
+        //                FlagUrl = selectedCountryObj?.FlagUrl ?? string.Empty
+        //            },
+        //            Role = (Role)(int)Enum.Parse<Role>(_registerModel.SelectedRole),
+        //            CreatedAt = DateTime.UtcNow
+        //        };
+
+        //        await africanNationsLeagueApi.RegisterUser(registerDto);
+
+        //        Snackbar.Add("You have successfully registered! We are redirecting you to the Login page!", Severity.Success);
+        //        await Task.Delay(2000);
+        //        NavigationManager?.NavigateTo("/login");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Snackbar.Add($"Registration failed: {ex.Message}", Severity.Error);
+        //    }
+        //    finally
+        //    {
+        //        isSubmitting = false;
+        //        StateHasChanged();
+        //        ClearFormFields();
+        //    }
+        //}
+
         public async Task CreatUser()
         {
             isSubmitting = true;
             StateHasChanged();
 
+            // Validate the model before proceeding
+            var validationContext = new ValidationContext(_registerModel);
+            var validationResults = new List<ValidationResult>();
+            bool isValid = Validator.TryValidateObject(_registerModel, validationContext, validationResults, true);
+
+            if (!isValid)
+            {
+                // Show all validation errors in the snackbar
+                foreach (var error in validationResults)
+                {
+                    Snackbar.Add(error.ErrorMessage, Severity.Error);
+                }
+                isSubmitting = false;
+                StateHasChanged();
+                return;
+            }
+
             try
             {
-                var selectedCountryObj = countries.FirstOrDefault(c => c.Code == SelectedCountry);
+                var selectedCountryObj = countries
+                    .FirstOrDefault(c => c.Code == _registerModel.SelectedCountry);
 
                 var registerDto = new UserDto
                 {
-                    FullName = firstName,
-                    Email = Email,
-                    PasswordHash = Password,
+                    FullName = _registerModel.firstName,
+                    Email = _registerModel.Email,
+                    PasswordHash = _registerModel.Password,
                     Country = new Country
                     {
-
                         Code = selectedCountryObj?.Code ?? string.Empty,
                         Name = selectedCountryObj?.Name ?? string.Empty,
                         FlagUrl = selectedCountryObj?.FlagUrl ?? string.Empty
                     },
-                    Role = (Role)(int)Enum.Parse<Role>(SelectedRole),
+                    Role = (Role)(int)Enum.Parse<Role>(_registerModel.SelectedRole),
                     CreatedAt = DateTime.UtcNow
                 };
 
                 await africanNationsLeagueApi.RegisterUser(registerDto);
 
                 Snackbar.Add("You have successfully registered! We are redirecting you to the Login page!", Severity.Success);
-                await Task.Delay(4000);
+                await Task.Delay(2000);
                 NavigationManager?.NavigateTo("/login");
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"Registration failed: {ex.Message}", Severity.Error);
+                Snackbar.Add($"Registration failed Please try again {ex.Message}", Severity.Error);
             }
             finally
             {
@@ -94,44 +192,20 @@ namespace AfricanNationsLeague_Web.Components.Pages
 
 
 
-        //public async Task CreatUser()
-        //{
+        //public string firstName { get; set; } = string.Empty;
+        //public string Email { get; set; } = string.Empty;
+        //public string Password { get; set; } = string.Empty;
+        //public string SelectedCountry { get; set; }
+        //public string SelectedRole { get; set; } = string.Empty;
 
-        //    var selectedCountryObj = countries.FirstOrDefault(c => c.Code == SelectedCountry);
-
-        //    var registerDto = new UserDto
-        //    {
-        //        FullName = firstName,
-        //        Email = Email,
-        //        PasswordHash = Password,
-        //        Country = new Country
-        //        {
-        //            Code = selectedCountryObj?.Code ?? string.Empty,
-        //            Name = selectedCountryObj?.Name ?? string.Empty,
-        //            FlagUrl = selectedCountryObj?.FlagUrl ?? string.Empty
-        //        },
-        //        Role = (Role)(int)Enum.Parse<Role>(SelectedRole),
-        //        CreatedAt = DateTime.UtcNow
-        //    };
-
-
-        //    await africanNationsLeagueApi.RegisterUser(registerDto);
-
-        //    Snackbar.Add("Form submitted successfully!", Severity.Success);
-        //    ClearFormFields();
-
-        //    StateHasChanged();
-
-
-        //}
 
         private void ClearFormFields()
         {
-            firstName = string.Empty;
-            Email = string.Empty;
-            Password = string.Empty;
-            SelectedCountry = string.Empty;
-            SelectedRole = string.Empty;
+            _registerModel.firstName = string.Empty;
+            _registerModel.Email = string.Empty;
+            _registerModel.Password = string.Empty;
+            _registerModel.SelectedCountry = string.Empty;
+            _registerModel.SelectedRole = string.Empty;
 
         }
 
@@ -147,7 +221,7 @@ namespace AfricanNationsLeague_Web.Components.Pages
         public class RegisterModel
         {
             [Required(ErrorMessage = "Full Name is required")]
-            public string FullName { get; set; } = string.Empty;
+            public string firstName { get; set; } = string.Empty;
 
             [Required(ErrorMessage = "Email is required")]
             [EmailAddress(ErrorMessage = "Invalid email address")]
@@ -160,10 +234,10 @@ namespace AfricanNationsLeague_Web.Components.Pages
             public string Password { get; set; } = string.Empty;
 
             [Required(ErrorMessage = "Country is required")]
-            public string Country { get; set; } = string.Empty;
+            public string SelectedCountry { get; set; } = string.Empty;
 
             [Required(ErrorMessage = "Role is required")]
-            public string Role { get; set; } = string.Empty;
+            public string SelectedRole { get; set; } = string.Empty;
         }
 
     }

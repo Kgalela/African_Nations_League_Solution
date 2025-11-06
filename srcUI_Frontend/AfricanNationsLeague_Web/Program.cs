@@ -1,4 +1,5 @@
 using AfricanNationsLeague_Web.Components;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using MudBlazor;
 using MudBlazor.Services;
 using Web.Infrustructure.Services;
@@ -26,6 +27,19 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
 
 });
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "auth_token";
+        options.LoginPath = "/login";
+        options.Cookie.MaxAge = TimeSpan.FromMinutes(30);
+        options.AccessDeniedPath = "/access-denied";
+
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddCascadingAuthenticationState();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -37,7 +51,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseStaticFiles();
 app.UseAntiforgery();
 

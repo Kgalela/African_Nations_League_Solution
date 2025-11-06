@@ -17,6 +17,58 @@ public class TournamentService
         _matchService = matchService;
     }
 
+    //public async Task<Tournament> StartTournamentAsync()
+    //{
+    //    var teams = (await _teamRepo.GetAllAsync()).Take(8).ToList();
+    //    if (teams.Count < 7)
+    //        throw new Exception("Tournament requires at least 7 teams registered.");
+
+    //    var matches = new List<Match>();
+
+    //    // Create matches for available teams
+    //    for (int i = 0; i < teams.Count - 1; i += 2)
+    //    {
+    //        if (i + 1 < teams.Count)
+    //        {
+    //            matches.Add(new Match
+    //            {
+    //                HomeTeamId = teams[i].Id,
+    //                AwayTeamId = teams[i + 1].Id,
+    //                HomeCountry = teams[i].Country,
+    //                AwayCountry = teams[i + 1].Country,
+    //                Stage = "Quarterfinal",
+    //                IsPlayed = false
+    //            });
+    //        }
+    //        else
+    //        {
+    //            // Odd team out, create a match with a placeholder for the 8th team
+    //            matches.Add(new Match
+    //            {
+    //                HomeTeamId = teams[i].Id,
+    //                AwayTeamId = null,
+    //                HomeCountry = teams[i].Country,
+    //                AwayCountry = null,
+    //                Stage = "Quarterfinal",
+    //                IsPlayed = false
+    //            });
+    //        }
+    //    }
+
+    //    var tournament = new Tournament
+    //    {
+    //        Name = "African Nations League 2026",
+    //        Matches = matches,
+    //        CurrentStage = "Quarterfinal",
+    //        IsCompleted = false,
+    //        CreatedAt = DateTime.UtcNow
+    //    };
+
+    //    await _tournamentRepo.AddAsync(tournament);
+    //    return tournament;
+    //}
+
+
     public async Task<Tournament> StartTournamentAsync()
     {
         var teams = (await _teamRepo.GetAllAsync()).Take(8).ToList();
@@ -33,6 +85,7 @@ public class TournamentService
             AwayCountry = teams[1].Country,
             Stage = "Quarterfinal",
             IsPlayed = false
+
         },
         new Match {
 
@@ -83,6 +136,29 @@ public class TournamentService
         return tournament;
     }
 
+    public async Task<Tournament?> GetOrCreateTournamentAsync()
+    {
+        // Get the latest tournament (active or not)
+        var tournaments = (await _tournamentRepo.GetAllAsync()).OrderByDescending(t => t.CreatedAt).ToList();
+        var tournament = tournaments.FirstOrDefault();
+
+        if (tournament != null && !tournament.IsCompleted)
+            return tournament;
+
+        var teams = (await _teamRepo.GetAllAsync()).ToList();
+        if (teams.Count >= 8)
+        {
+            // Start and return a new tournament if there are at least 8 teams
+            await StartTournamentAsync();
+            return await SimulateCurrentStageAsync();
+        }
+
+        // Not enough teams to start a tournament
+        return null;
+    }
+
+
+
 
 
     // Get latest tournament (active)
@@ -91,6 +167,9 @@ public class TournamentService
         var all = (await _tournamentRepo.GetAllAsync()).OrderByDescending(t => t.CreatedAt).ToList();
         return all.FirstOrDefault();
     }
+
+
+
 
     // Start tournament (you already have similar code). Keep yours.
     // IMPORTANT: make sure you pick 8 teams and create 4 Quarterfinal matches.
@@ -181,45 +260,16 @@ public class TournamentService
         match.IsPlayed = true;
         match.PlayedAt = DateTime.UtcNow;
 
+
+
         await _tournamentRepo.UpdateAsync(tournament);
 
         return match;
     }
 
 
-    //private async Task AdvanceIfStageCompleteAsync(Tournament t, string stageJustPlayed)
-    //{
-    //    var allPlayed = t.Matches.Where(x => x.Stage == stageJustPlayed).All(x => x.IsPlayed);
-    //    if (!allPlayed)
-    //    {
-    //        await _tournamentRepo.UpdateAsync(t);
-    //        return;
-    //    }
 
-    //    if (stageJustPlayed == "Quarterfinal")
-    //    {
-    //        // collect winners, randomize, create 2 Semifinals
-    //        var winners = WinnersAsCountries(t, "Quarterfinal");
-    //        Shuffle(winners);
-    //        t.Matches.Add(new Match { HomeCountry = winners[0], AwayCountry = winners[1], Stage = "Semifinal", IsPlayed = false, PlayedAt = DateTime.UtcNow });
-    //        t.Matches.Add(new Match { HomeCountry = winners[2], AwayCountry = winners[3], Stage = "Semifinal", IsPlayed = false, PlayedAt = DateTime.UtcNow });
-    //        t.CurrentStage = "Semifinal";
-    //    }
-    //    else if (stageJustPlayed == "Semifinal")
-    //    {
-    //        var winners = WinnersAsCountries(t, "Semifinal");
-    //        Shuffle(winners);
-    //        t.Matches.Add(new Match { HomeCountry = winners[0], AwayCountry = winners[1], Stage = "Final", IsPlayed = false, PlayedAt = DateTime.UtcNow });
-    //        t.CurrentStage = "Final";
-    //    }
-    //    else if (stageJustPlayed == "Final")
-    //    {
-    //        t.CurrentStage = "Completed";
-    //        t.IsCompleted = true;
-    //    }
 
-    //    await _tournamentRepo.UpdateAsync(t);
-    //}
     private async Task AdvanceIfStageCompleteAsync(Tournament t, string stageJustPlayed)
     {
         var allPlayed = t.Matches.Where(x => x.Stage == stageJustPlayed).All(x => x.IsPlayed);
@@ -250,6 +300,7 @@ public class TournamentService
                 AwayCountry = winners[1],
                 Stage = "Semifinal",
                 IsPlayed = false
+
             });
             t.Matches.Add(new Match
             {
@@ -291,38 +342,7 @@ public class TournamentService
     }
 
 
-    //private async Task AdvanceIfStageCompleteAsync(Tournament t, string stageJustPlayed)
-    //{
-    //    var allPlayed = t.Matches.Where(x => x.Stage == stageJustPlayed).All(x => x.IsPlayed);
-    //    if (!allPlayed)
-    //    {
-    //        await _tournamentRepo.UpdateAsync(t);
-    //        return;
-    //    }
 
-    //    if (stageJustPlayed == "Quarterfinal")
-    //    {
-    //        var winners = WinnersAsCountries(t, "Quarterfinal");
-    //        Shuffle(winners);
-    //        t.Matches.Add(new Match { HomeCountry = winners[0], AwayCountry = winners[1], Stage = "Semifinal", IsPlayed = false });
-    //        t.Matches.Add(new Match { HomeCountry = winners[2], AwayCountry = winners[3], Stage = "Semifinal", IsPlayed = false });
-    //        t.CurrentStage = "Semifinal";
-    //    }
-    //    else if (stageJustPlayed == "Semifinal")
-    //    {
-    //        var winners = WinnersAsCountries(t, "Semifinal");
-    //        Shuffle(winners);
-    //        t.Matches.Add(new Match { HomeCountry = winners[0], AwayCountry = winners[1], Stage = "Final", IsPlayed = false });
-    //        t.CurrentStage = "Final";
-    //    }
-    //    else if (stageJustPlayed == "Final")
-    //    {
-    //        t.CurrentStage = "Completed";
-    //        t.IsCompleted = true;
-    //    }
-
-    //    await _tournamentRepo.UpdateAsync(t);
-    //}
 
     public async Task<List<Match>> GetSemiFinalMatchesAsync()
     {
@@ -456,38 +476,30 @@ public class TournamentService
         }
     }
 
-    //private async Task AdvanceIfStageCompleteAsync(Tournament t, string stageJustPlayed)
-    //{
-    //    var allPlayed = t.Matches.Where(x => x.Stage == stageJustPlayed).All(x => x.IsPlayed);
-    //    if (!allPlayed)
-    //    {
-    //        await _tournamentRepo.UpdateAsync(t);
-    //        return;
-    //    }
+    public async Task RestartTournamentAsync()
+    {
+        // Delete all tournaments
+        var allTournaments = await _tournamentRepo.GetAllAsync();
+        foreach (var t in allTournaments)
+        {
+            await _tournamentRepo.DeleteAsync(t.Id);
+        }
 
-    //    if (stageJustPlayed == "Quarterfinal")
-    //    {
-    //        var winners = WinnersAsCountries(t, "Quarterfinal");
-    //        Shuffle(winners);
-    //        t.Matches.Add(new Match { HomeCountry = winners[0], AwayCountry = winners[1], Stage = "Semifinal", IsPlayed = false });
-    //        t.Matches.Add(new Match { HomeCountry = winners[2], AwayCountry = winners[3], Stage = "Semifinal", IsPlayed = false });
-    //        t.CurrentStage = "Semifinal";
-    //    }
-    //    else if (stageJustPlayed == "Semifinal")
-    //    {
-    //        var winners = WinnersAsCountries(t, "Semifinal");
-    //        Shuffle(winners);
-    //        t.Matches.Add(new Match { HomeCountry = winners[0], AwayCountry = winners[1], Stage = "Final", IsPlayed = false });
-    //        t.CurrentStage = "Final";
-    //    }
-    //    else if (stageJustPlayed == "Final")
-    //    {
-    //        t.CurrentStage = "Completed";
-    //        t.IsCompleted = true;
-    //    }
+        // Optionally, clear all matches if stored separately
+        // Uncomment if you want to clear all matches from the match repository
+        //if (_matchService != null && _matchService.GetAllAsync != null)
+        //{
+        //    var allMatches = await _matchService.GetAllAsync();
+        //    foreach (var m in allMatches)
+        //    {
+        //        await _matchService.DeleteAsync(m.Id);
+        //    }
+        //}
 
-    //    await _tournamentRepo.UpdateAsync(t);
-    //}
+        // Start a new tournament
+        await StartTournamentAsync();
+    }
+
 
 
 }

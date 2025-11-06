@@ -20,7 +20,7 @@ namespace AfricanNationsLeague.Application.Services
         // 1️⃣ Simulate a match
         // ================================
 
-        public async Task<Match> SimulateMatchAsync(string homeTeamId, string awayTeamId, string stage)
+        public async Task<Domain.Entities.Match> SimulateMatchAsync(string homeTeamId, string awayTeamId, string stage)
         {
             var homeTeam = await _teamRepository.GetByIdAsync(homeTeamId);
             var awayTeam = await _teamRepository.GetByIdAsync(awayTeamId);
@@ -58,7 +58,7 @@ namespace AfricanNationsLeague.Application.Services
 
             commentary.Add(new CommentaryEvent { Minute = 90, Text = "Full-time whistle! What a match!" });
 
-            var match = new Match
+            var match = new Domain.Entities.Match
             {
 
                 HomeTeamId = homeTeam.Id,
@@ -112,6 +112,21 @@ namespace AfricanNationsLeague.Application.Services
                     Name = m.AwayCountry.Name,
                     FlagUrl = m.AwayCountry.FlagUrl
                 },
+                AwayGoals = m.AwayGoals.Select(g => new GoalDto
+                {
+                    PlayerName = g.PlayerName,
+                    Minute = g.Minute
+                }).ToList(),
+                HomeGoals = m.HomeGoals.Select(g => new GoalDto
+                {
+                    PlayerName = g.PlayerName,
+                    Minute = g.Minute
+                }).ToList(),
+                Commentary = m.Commentary.Select(c => new CommentaryEventDto
+                {
+                    Minute = c.Minute,
+                    Text = c.Text
+                }).ToList(),
 
                 HomeScore = m.HomeScore,
                 AwayScore = m.AwayScore,
@@ -126,7 +141,7 @@ namespace AfricanNationsLeague.Application.Services
         // ================================
         // 3️⃣ Get match by ID
         // ================================
-        public async Task<Match?> GetByIdAsync(string id)
+        public async Task<Domain.Entities.Match?> GetByIdAsync(string id)
         {
             return await _matchRepository.GetByIdAsync(id);
         }
@@ -152,7 +167,7 @@ namespace AfricanNationsLeague.Application.Services
 
 
         // ✅ 1️⃣ Simulate a match by MatchId (Admin Action)
-        public async Task<Match> SimulateMatchByIdAsync(string Id)
+        public async Task<Domain.Entities.Match> SimulateMatchByIdAsync(string Id)
         {
             var match = await _matchRepository.GetByIdAsync(Id);
             if (match == null) throw new Exception($"Match {Id} not found.");
@@ -163,7 +178,7 @@ namespace AfricanNationsLeague.Application.Services
 
 
         // ✅ 2️⃣ Play a match manually by MatchId (Replay fresh match)
-        public async Task<Match> PlayMatchByIdAsync(string matchId)
+        public async Task<Domain.Entities.Match> PlayMatchByIdAsync(string matchId)
         {
             var match = await _matchRepository.GetByIdAsync(matchId);
             if (match == null) throw new Exception($"Match {matchId} not found.");
