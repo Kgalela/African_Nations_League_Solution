@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="AfricanNationsLeague_Web" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\kgalela\\source\\repos\\INF4001N_GLLKHA002_ANLeague_2026\\African_Nations_League_Solution\\srcUI_Frontend\\AfricanNationsLeague_Web\\obj\\Release\\net8\.0\\PubTmp\\Out\\$" />
+  </parameter>
+</parameters>
