@@ -16,5 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Web.Infrustructure\Web.Infrustructure.csproj" />
   </ItemGroup>
+	
+	
 
 </Project>
